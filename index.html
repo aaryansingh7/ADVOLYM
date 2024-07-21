@@ -318,7 +318,6 @@
             document.getElementById(`upload-${subject}`).style.display = 'block';
         }
     </script>
-
 </body>
 </html>
     <!DOCTYPE html>
@@ -403,6 +402,10 @@
             flex-direction: column;
             justify-content: space-between;
             position: relative;
+            overflow: hidden;
+            resize: both;
+            max-width: 300px;
+            max-height: 300px;
         }
         .note textarea {
             width: 100%;
@@ -466,6 +469,7 @@
 
     <div class="context-menu" id="context-menu">
         <a href="#" onclick="saveNote()">Save Note</a>
+        <a href="#" onclick="deleteNote()">Delete Note</a>
     </div>
 
     <script>
@@ -502,11 +506,16 @@
                 noteContainer.appendChild(note);
                 toggleColorPicker();
                 selectedColor = '';
+                saveNotes(); // Save notes on addition
             }
         }
 
         function deleteNote() {
-            event.target.parentElement.remove();
+            if (currentNote) {
+                currentNote.remove();
+                saveNotes(); // Save notes after deletion
+            }
+            hideContextMenu();
         }
 
         function showContextMenu(event) {
@@ -523,17 +532,46 @@
         function saveNote() {
             if (currentNote) {
                 const text = currentNote.querySelector('textarea').value;
-                // Simulate saving note (You can replace this with an actual save operation)
-                console.log('Saved note:', text);
+                const color = currentNote.style.background;
+                const notesData = JSON.parse(localStorage.getItem('notes')) || [];
+                const noteIndex = notesData.findIndex(note => note.color === color && note.text === text);
+                if (noteIndex === -1) {
+                    notesData.push({ color, text });
+                } else {
+                    notesData[noteIndex] = { color, text };
+                }
+                localStorage.setItem('notes', JSON.stringify(notesData));
                 alert('Note saved!');
                 hideContextMenu();
             }
         }
 
+        function loadNotes() {
+            const notesData = JSON.parse(localStorage.getItem('notes'));
+            if (notesData) {
+                notesData.forEach(noteData => {
+                    const noteContainer = document.getElementById('notes-container');
+                    const note = document.createElement('div');
+                    note.className = 'note';
+                    note.style.background = noteData.color;
+                    note.innerHTML = `
+                        <textarea>${noteData.text}</textarea>
+                        <button class="delete-note" onclick="deleteNote()">Delete</button>
+                    `;
+                    note.addEventListener('contextmenu', function(event) {
+                        event.preventDefault();
+                        currentNote = note;
+                        showContextMenu(event);
+                    });
+                    noteContainer.appendChild(note);
+                });
+            }
+        }
+
         document.addEventListener('click', hideContextMenu);
+        document.addEventListener('DOMContentLoaded', loadNotes);
     </script>
 
 </body>
 </html>
-
 </html>
