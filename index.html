@@ -1,24 +1,4 @@
-public class LoginServlet extends HttpServlet {
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String username = request.getParameter("username");
-    String password = request.getParameter("password");
-    // Validate username and password against database
-    if (authenticate(username, password)) {
-      // Login successful, redirect to dashboard
-      request.getSession().setAttribute("user", username);
-      response.sendRedirect("/dashboard");
-    } else {
-      // Login failed, display error message
-      request.setAttribute("errorMessage", "Invalid username or password");
-      request.getRequestDispatcher("/login.jsp").forward(request, response);
-    }
-  }
 
-  private boolean authenticate(String username, String password) {
-    // Connect to database and check credentials
-    // (Implementation omitted for brevity)
-  }
-}
 <ul class="course-categories">
   <li><a href="/courses/physics">Physics</a></li>
   <li><a href="/courses/chemistry">Chemistry</a></li>
