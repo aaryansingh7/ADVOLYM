@@ -711,7 +711,173 @@
         }
 
         // Delete the selected note
-       
+       <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Storage for JEE Aspirant</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            overflow-x: hidden;
+        }
+        .header {
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            background: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+        .card-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-header {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .upload-section {
+            margin-top: 20px;
+        }
+        .upload-section input[type="file"] {
+            display: none;
+        }
+        .upload-section label {
+            display: inline-block;
+            background: linear-gradient(45deg, #34d399, #3b82f6);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .upload-section label:hover {
+            background: linear-gradient(45deg, #3b82f6, #34d399);
+        }
+        .save-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .save-button:hover {
+            background: #45a049;
+        }
+        .upload-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
 
+    <div class="header">
+        Document Storage for JEE Aspirant
+    </div>
+
+    <div class="container">
+        <div class="card-container">
+            <div class="card" id="physics-card">
+                <div class="card-header">Physics</div>
+                <div class="upload-section">
+                    <input type="file" id="physics-file-upload" />
+                    <label for="physics-file-upload">Upload File</label>
+                    <div class="upload-info" id="physics-upload-info">No file selected</div>
+                </div>
+                <button class="save-button" onclick="saveFile('physics')">Save Physics File</button>
+            </div>
+
+            <div class="card" id="maths-card">
+                <div class="card-header">Maths</div>
+                <div class="upload-section">
+                    <input type="file" id="maths-file-upload" />
+                    <label for="maths-file-upload">Upload File</label>
+                    <div class="upload-info" id="maths-upload-info">No file selected</div>
+                </div>
+                <button class="save-button" onclick="saveFile('maths')">Save Maths File</button>
+            </div>
+
+            <div class="card" id="chemistry-card">
+                <div class="card-header">Chemistry</div>
+                <div class="upload-section">
+                    <input type="file" id="chemistry-file-upload" />
+                    <label for="chemistry-file-upload">Upload File</label>
+                    <div class="upload-info" id="chemistry-upload-info">No file selected</div>
+                </div>
+                <button class="save-button" onclick="saveFile('chemistry')">Save Chemistry File</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateUploadInfo(inputId, infoId) {
+            const input = document.getElementById(inputId);
+            const info = document.getElementById(infoId);
+            input.addEventListener('change', function() {
+                const fileName = input.files.length > 0 ? input.files[0].name : 'No file selected';
+                info.textContent = fileName;
+            });
+        }
+
+        function saveFile(subject) {
+            const input = document.getElementById(`${subject}-file-upload`);
+            if (input.files.length === 0) {
+                alert(`No file selected for ${subject}`);
+                return;
+            }
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                localStorage.setItem(subject, event.target.result);
+                alert(`${subject.charAt(0).toUpperCase() + subject.slice(1)} file saved!`);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Initialize upload info listeners
+        updateUploadInfo('physics-file-upload', 'physics-upload-info');
+        updateUploadInfo('maths-file-upload', 'maths-upload-info');
+        updateUploadInfo('chemistry-file-upload', 'chemistry-upload-info');
+    </script>
+
+</body>
+</html>
 
 </html>
