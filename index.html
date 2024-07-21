@@ -1265,5 +1265,59 @@
   </script>
 </body>
 </html>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional JEE Study Portal</title>
+  <style>
+    /* Style definitions here... */
+  </style>
+</head>
+<body>
+  <div class="header">
+    Professional JEE Study Portal
+  </div>
+
+  <div class="container">
+    <section>
+      <h2>Upload Documents</h2>
+      <form id="upload-form" method="post" enctype="multipart/form-data">
+        <div class="card-container">
+          <div class="card" id="physics-card">
+            <div class="card-header">Physics</div>
+            <div class="upload-section">
+              <input type="file" id="physics-file-upload" name="physics_file" accept=".pdf,.docx" />
+              <label for="physics-file-upload">Upload Physics Document (PDF, Docx only)</label>
+              <div class="upload-info" id="physics-upload-info">No file selected</div>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="save-button">Upload Physics Document</button>
+      </form>
+      <div id="upload-status"></div>
+    </section>
+
+    <section>
+      </section>
+  </div>
+
+  <script>
+    const uploadForm = document.getElementById('upload-form');
+    const uploadStatus = document.getElementById('upload-status');
+
+    uploadForm.addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Send the form data to the server using AJAX or Fetch API
+      // ... (server communication logic) ...
+
+      uploadStatus.textContent = "Uploading..."; // Display upload progress
+      // Handle successful upload or errors based on server response
+    });
+  </script>
+</body>
+</html>
 
 </html>
