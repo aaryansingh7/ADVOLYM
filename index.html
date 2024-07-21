@@ -1,70 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEE EdTech Platform</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <div class="hero-section">
-            <div class="hero-content">
-                <h1>Unlock Your Potential with Expert JEE Guidance</h1>
-                <a href="#features" class="cta-button">Join Now</a>
-            </div>
-        </div>
-    </header>
+public class LoginServlet extends HttpServlet {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String username = request.getParameter("username");
+    String password = request.getParameter("password");
+    // Validate username and password against database
+    if (authenticate(username, password)) {
+      // Login successful, redirect to dashboard
+      request.getSession().setAttribute("user", username);
+      response.sendRedirect("/dashboard");
+    } else {
+      // Login failed, display error message
+      request.setAttribute("errorMessage", "Invalid username or password");
+      request.getRequestDispatcher("/login.jsp").forward(request, response);
+    }
+  }
 
-    <section id="features" class="features-section">
-        <div class="feature-card" style="background-color: #00bcd4;">
-            <h2>Live Lectures</h2>
-            <p>Interact with experts in real-time.</p>
-        </div>
-        <div class="feature-card" style="background-color: #ff5722;">
-            <h2>Practice Tests</h2>
-            <p>Test your knowledge with our extensive question bank.</p>
-        </div>
-        <div class="feature-card" style="background-color: #9c27b0;">
-            <h2>Study Materials</h2>
-            <p>Access chapter-wise study resources.</p>
-        </div>
-    </section>
-
-    <section class="testimonials">
-        <div class="testimonial-slider">
-            <div class="testimonial">
-                <p>"This platform transformed my preparation experience!"</p>
-                <span>- Student A</span>
-            </div>
-            <div class="testimonial">
-                <p>"Amazing resources and expert guidance!"</p>
-                <span>- Student B</span>
-            </div>
-        </div>
-    </section>
-
-    <section class="news">
-        <div class="news-ticker">
-            <p>Upcoming Feature: AI-powered Doubt Clearing!</p>
-        </div>
-    </section>
-
-    <footer>
-        <div class="footer-content">
-            <ul>
-                <li><a href="#community">Community Forum</a></li>
-                <li><a href="#timetable">Timetable Management</a></li>
-                <li><a href="#contact">Contact Us</a></li>
-            </ul>
-            <div class="social-media">
-                <a href="#">Facebook</a>
-                <a href="#">Twitter</a>
-                <a href="#">Instagram</a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="scripts.js"></script>
-</body>
-</html>
+  private boolean authenticate(String username, String password) {
+    // Connect to database and check credentials
+    // (Implementation omitted for brevity)
+  }
+}
