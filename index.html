@@ -1,190 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEE EdTech Platform</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Document Upload</title>
 </head>
 <body>
-    <header>
-        <div class="hero-section">
-            <div class="hero-content">
-                <h1>Unlock Your Potential with Expert JEE Guidance</h1>
-                <a href="#features" class="cta-button">Join Now</a>
-            </div>
-        </div>
-    </header>
+    <h1>Upload a PDF Document</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" accept="application/pdf" required>
+        <button type="submit">Upload</button>
+    </form>
+    <div id="message"></div>
 
-    <section id="features" class="features-section">
-        <div class="feature-card" style="background-color: #00bcd4;">
-            <h2>Live Lectures</h2>
-            <p>Interact with experts in real-time.</p>
-        </div>
-        <div class="feature-card" style="background-color: #ff5722;">
-            <h2>Practice Tests</h2>
-            <p>Test your knowledge with our extensive question bank.</p>
-        </div>
-        <div class="feature-card" style="background-color: #9c27b0;">
-            <h2>Study Materials</h2>
-            <p>Access chapter-wise study resources.</p>
-        </div>
-    </section>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
 
-    <section class="testimonials">
-        <div class="testimonial-slider">
-            <div class="testimonial">
-                <p>"This platform transformed my preparation experience!"</p>
-                <span>- Student A</span>
-            </div>
-            <div class="testimonial">
-                <p>"Amazing resources and expert guidance!"</p>
-                <span>- Student B</span>
-            </div>
-        </div>
-    </section>
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
 
-    <section class="news">
-        <div class="news-ticker">
-            <p>Upcoming Feature: AI-powered Doubt Clearing!</p>
-        </div>
-    </section>
-
-    <footer>
-        <div class="footer-content">
-            <ul>
-                <li><a href="#community">Community Forum</a></li>
-                <li><a href="#timetable">Timetable Management</a></li>
-                <li><a href="#contact">Contact Us</a></li>
-            </ul>
-            <div class="social-media">
-                <a href="#">Facebook</a>
-                <a href="#">Twitter</a>
-                <a href="#">Instagram</a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="scripts.js"></script>
-</body>
-</html>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEE Aspirant Hub</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 1rem;
-            text-align: center;
-        }
-        .hero {
-            background: url('hero-banner.jpg') no-repeat center center/cover;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-        }
-        .container {
-            padding: 2rem;
-        }
-        .section {
-            margin-bottom: 2rem;
-        }
-        .section h2 {
-            color: #333;
-        }
-        .upload-section {
-            background-color: #fff;
-            padding: 1rem;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .upload-section form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .upload-section input[type="file"] {
-            padding: 0.5rem;
-        }
-        .upload-section button {
-            padding: 0.5rem;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .upload-section button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Welcome to JEE Aspirant Hub</h1>
-    </header>
-    <div class="hero">
-        <h2>Your Gateway to IIT</h2>
-    </div>
-    <div class="container">
-        <div class="section">
-            <h2>Course Categories</h2>
-            <p>Explore various courses designed to help you ace the JEE exams.</p>
-        </div>
-        <div class="section">
-            <h2>Free Resources</h2>
-            <p>Access a plethora of free resources including notes, practice papers, and more.</p>
-        </div>
-        <div class="section">
-            <h2>Live Classes & Events</h2>
-            <p>Join live classes and events to interact with top educators and peers.</p>
-        </div>
-        <div class="section upload-section">
-            <h2>Upload Your Files</h2>
-            <form action="/upload" method="post" enctype="multipart/form-data">
-                <input type="file" name="file" accept=".pdf,.doc,.docx">
-                <button type="submit">Upload</button>
-            </form>
-            document.getElementById('uploadButton').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        // Upload the document (this example uses FormData for a POST request)
-        const formData = new FormData();
-        formData.append('document', file);
-
-        fetch('/upload', {
-            method: 'POST',
-            body: formData
-        }).then(response => response.json())
-          .then(data => {
-              if (data.success) {
-                  // Assume data.slideUrl contains the URL to open the slide
-                  openSlide(data.slideUrl);
-              } else {
-                  console.error('Upload failed');
-              }
-          }).catch(error => console.error('Error:', error));
-    }
-});
-
-function openSlide(url) {
-    // Function to open or display the slide
-    window.open(url, '_blank'); // Example: Open the slide in a new tab
-}
-        </div>
-    </div>
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          document.getElementById('message').innerHTML = `File uploaded successfully. <a href="${data.filePath}" target="_blank">View PDF</a>`;
+                      } else {
+                          document.getElementById('message').textContent = 'Upload failed.';
+                      }
+                  }).catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
 </body>
 </html>
