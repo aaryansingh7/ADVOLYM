@@ -1,70 +1,47 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>My Website</title>
-</head>
-<body>
-    <h1>Welcome to My Website</h1>
-    <p>!</p><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEE Preparation</title>
-    <link href="https://aaryansingh7.github.io/ADVOLYM/" rel="stylesheet">
-    <style>
-        .half-black-yellow {
-            background: linear-gradient(to right, black 50%, yellow 50%);
-        }
-        .countdown {
-            color: white;
-            font-size: 2em;
-        }
-        .circle-btn {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background-color: violet;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5em;
-            text-align: center;
-            margin: auto;
-        }
-    </style>
+    <title>JEE SPACE</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="half-black-yellow h-screen flex flex-col items-center justify-center">
-    <div class="text-center">
-        <h1 class="text-4xl text-white">JEE Exam Countdown</h1>
-        <div class="countdown" id="countdown"></div>
-        <a href="jee-space.html" class="mt-10 inline-block bg-white text-black py-2 px-4 rounded">Go to JEE SPACE</a>
-    </div>
-
-    <script>
-        // Countdown Timer
-        function countdown() {
-            const examDate = new Date("Dec 31, 2024 00:00:00").getTime();
-            const now = new Date().getTime();
-            const distance = examDate - now;
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById("countdown").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-            if (distance < 0) {
-                document.getElementById("countdown").innerHTML = "EXAM TIME!";
-            }
-        }
-
-        setInterval(countdown, 1000);
-    </script>
-</body>
-</html>
-
+<body class="bg-gray-100 h-screen">
+    <header class="bg-blue-600 p-4 text-white text-center">
+        <h1 class="text-3xl">JEE SPACE</h1>
+    </header>
+    <main class="p-6">
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-2">Personalized Learning Path</h2>
+            <p>Use the algorithm to get personalized learning recommendations.</p>
+            <button class="mt-2 bg-purple-500 text-white py-2 px-4 rounded">Get Learning Path</button>
+        </section>
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-2">Content Delivery</h2>
+            <div class="circle-btn">Pre-recorded Videos</div>
+        </section>
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-2">Learning Tools</h2>
+            <ul class="list-disc pl-6">
+                <li>Chapter-wise Study Material</li>
+                <li>Question Bank</li>
+                <li>Formula Sheets</li>
+            </ul>
+        </section>
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-2">Assessment and Practice</h2>
+            <ul class="list-disc pl-6">
+                <li>Mock Tests</li>
+                <li>Practice Tests</li>
+                <li>Performance Tracking</li>
+            </ul>
+        </section>
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-2">Admin Features</h2>
+            <ul class="list-disc pl-6">
+                <li>Edit/Upload Materials</li>
+            </ul>
+        </section>
+    </main>
 </body>
 </html>
