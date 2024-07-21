@@ -1122,7 +1122,7 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background: #f0f0f0;
+            background: #f5f5f5;
             overflow-x: hidden;
         }
         .header {
@@ -1344,41 +1344,39 @@
         <!-- Video Upload Section -->
         <div class="section">
             <h2>Upload Videos</h2>
-            <div class="video-container">
-                <div class="card-container">
-                    <div class="card" id="physics-video-card">
-                        <div class="card-header">Physics</div>
-                        <div class="upload-section">
-                            <input type="file" id="physics-video-upload" accept="video/*" />
-                            <label for="physics-video-upload">Upload Physics Video</label>
-                            <div class="upload-info" id="physics-video-info">No video selected</div>
-                        </div>
-                        <button class="save-button" onclick="uploadVideo('physics')">Upload Physics Video</button>
+            <div class="card-container">
+                <div class="card" id="physics-video-card">
+                    <div class="card-header">Physics</div>
+                    <div class="upload-section">
+                        <input type="file" id="physics-video-upload" accept="video/*" />
+                        <label for="physics-video-upload">Upload Physics Video</label>
+                        <div class="upload-info" id="physics-video-info">No video selected</div>
                     </div>
-
-                    <div class="card" id="maths-video-card">
-                        <div class="card-header">Maths</div>
-                        <div class="upload-section">
-                            <input type="file" id="maths-video-upload" accept="video/*" />
-                            <label for="maths-video-upload">Upload Maths Video</label>
-                            <div class="upload-info" id="maths-video-info">No video selected</div>
-                        </div>
-                        <button class="save-button" onclick="uploadVideo('maths')">Upload Maths Video</button>
-                    </div>
-
-                    <div class="card" id="chemistry-video-card">
-                        <div class="card-header">Chemistry</div>
-                        <div class="upload-section">
-                            <input type="file" id="chemistry-video-upload" accept="video/*" />
-                            <label for="chemistry-video-upload">Upload Chemistry Video</label>
-                            <div class="upload-info" id="chemistry-video-info">No video selected</div>
-                        </div>
-                        <button class="save-button" onclick="uploadVideo('chemistry')">Upload Chemistry Video</button>
-                    </div>
+                    <button class="save-button" onclick="uploadVideo('physics')">Upload Physics Video</button>
                 </div>
-                <div class="video-list" id="video-list">
-                    <!-- Uploaded videos will appear here -->
+
+                <div class="card" id="maths-video-card">
+                    <div class="card-header">Maths</div>
+                    <div class="upload-section">
+                        <input type="file" id="maths-video-upload" accept="video/*" />
+                        <label for="maths-video-upload">Upload Maths Video</label>
+                        <div class="upload-info" id="maths-video-info">No video selected</div>
+                    </div>
+                    <button class="save-button" onclick="uploadVideo('maths')">Upload Maths Video</button>
                 </div>
+
+                <div class="card" id="chemistry-video-card">
+                    <div class="card-header">Chemistry</div>
+                    <div class="upload-section">
+                        <input type="file" id="chemistry-video-upload" accept="video/*" />
+                        <label for="chemistry-video-upload">Upload Chemistry Video</label>
+                        <div class="upload-info" id="chemistry-video-info">No video selected</div>
+                    </div>
+                    <button class="save-button" onclick="uploadVideo('chemistry')">Upload Chemistry Video</button>
+                </div>
+            </div>
+            <div class="video-list" id="video-list">
+                <!-- Uploaded videos will appear here -->
             </div>
         </div>
 
