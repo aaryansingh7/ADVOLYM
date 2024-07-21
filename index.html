@@ -19,3 +19,30 @@ public class LoginServlet extends HttpServlet {
     // (Implementation omitted for brevity)
   }
 }
+<ul class="course-categories">
+  <li><a href="/courses/physics">Physics</a></li>
+  <li><a href="/courses/chemistry">Chemistry</a></li>
+  <li><a href="/courses/mathematics">Mathematics</a></li>
+  <%-- Add more categories dynamically using a loop --%>
+</ul>
+<div id="quiz">
+  <p>What is the capital of France?</p>
+  <ul>
+    <li><input type="radio" name="answer" value="London"> London</li>
+    <li><input type="radio" name="answer" value="Paris"> Paris</li>
+    <li><input type="radio" name="answer" value="Berlin"> Berlin</li>
+  </ul>
+  <button onclick="checkAnswer()">Submit Answer</button>
+</div>
+
+<script>
+function checkAnswer() {
+  const selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
+  if (selectedAnswer === "Paris") {
+    alert("Correct!");
+  } else {
+    alert("Incorrect. The answer is Paris.");
+  }
+}
+</script>
+
