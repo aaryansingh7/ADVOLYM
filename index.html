@@ -158,6 +158,32 @@
                 <input type="file" name="file" accept=".pdf,.doc,.docx">
                 <button type="submit">Upload</button>
             </form>
+            document.getElementById('uploadButton').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        // Upload the document (this example uses FormData for a POST request)
+        const formData = new FormData();
+        formData.append('document', file);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  // Assume data.slideUrl contains the URL to open the slide
+                  openSlide(data.slideUrl);
+              } else {
+                  console.error('Upload failed');
+              }
+          }).catch(error => console.error('Error:', error));
+    }
+});
+
+function openSlide(url) {
+    // Function to open or display the slide
+    window.open(url, '_blank'); // Example: Open the slide in a new tab
+}
         </div>
     </div>
 </body>
