@@ -1,28 +1,75 @@
-
-<ul class="course-categories">
-  <li><a href="/courses/physics">Physics</a></li>
-  <li><a href="/courses/chemistry">Chemistry</a></li>
-  <li><a href="/courses/mathematics">Mathematics</a></li>
-  <%-- Add more categories dynamically using a loop --%>
-</ul>
-<div id="quiz">
-  <p>What is the capital of France?</p>
-  <ul>
-    <li><input type="radio" name="answer" value="London"> London</li>
-    <li><input type="radio" name="answer" value="Paris"> Paris</li>
-    <li><input type="radio" name="answer" value="Berlin"> Berlin</li>
-  </ul>
-  <button onclick="checkAnswer()">Submit Answer</button>
-</div>
-
-<script>
-function checkAnswer() {
-  const selectedAnswer = document.querySelector('input[name="answer"]:checked').value;
-  if (selectedAnswer === "Paris") {
-    alert("Correct!");
-  } else {
-    alert("Incorrect. The answer is Paris.");
-  }
-}
-</script>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEE Aspirant Hub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .hero {
+            background: url('hero-banner.jpg') no-repeat center center/cover;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            padding: 2rem;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        .section h2 {
+            color: #333;
+        }
+        .upload-section {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to JEE Aspirant Hub</h1>
+    </header>
+    <div class="hero">
+        <h2>Your Gateway to IIT</h2>
+    </div>
+    <div class="container">
+        <div class="section">
+            <h2>Course Categories</h2>
+            <p>Explore various courses designed to help you ace the JEE exams.</p>
+        </div>
+        <div class="section">
+            <h2>Free Resources</h2>
+            <p>Access a plethora of free resources including notes, practice papers, and more.</p>
+        </div>
+        <div class="section">
+            <h2>Live Classes & Events</h2>
+            <p>Join live classes and events to interact with top educators and peers.</p>
+        </div>
+        <div class="section upload-section">
+            <h2>Upload Your Files</h2>
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".pdf,.doc,.docx">
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
