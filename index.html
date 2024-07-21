@@ -1111,5 +1111,342 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional JEE Study Portal</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+            overflow-x: hidden;
+        }
+        .header {
+            background: linear-gradient(45deg, #4a90e2, #50e3c2);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            font-weight: bold;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .header::after {
+            content: '';
+            background: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        .container {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .card-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            width: 300px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+        .card-header {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: white;
+            background: linear-gradient(45deg, #ff6f61, #ffca28);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .upload-section {
+            margin-top: 20px;
+        }
+        .upload-section input[type="file"] {
+            display: none;
+        }
+        .upload-section label {
+            display: inline-block;
+            background: linear-gradient(45deg, #34d399, #3b82f6);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .upload-section label:hover {
+            background: linear-gradient(45deg, #3b82f6, #34d399);
+        }
+        .save-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .save-button:hover {
+            background: #45a049;
+        }
+        .upload-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .file-list, .video-list {
+            margin-top: 20px;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .file-item, .video-item {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .file-item .timestamp, .video-item .timestamp {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .roadmap-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .roadmap-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .roadmap-shape {
+            width: 100px;
+            height: 100px;
+            background: #ffeb3b;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s;
+        }
+        .roadmap-shape:hover {
+            background: #fbc02d;
+        }
+        .roadmap-shape[data-color="red"] { background: #f44336; }
+        .roadmap-shape[data-color="green"] { background: #4caf50; }
+        .roadmap-shape[data-color="blue"] { background: #2196f3; }
+        .roadmap-shape[data-color="purple"] { background: #9c27b0; }
+        .roadmap-shape[data-color="yellow"] { background: #ffeb3b; }
+        .roadmap-shape[data-color="orange"] { background: #ff9800; }
+        .roadmap-shape[data-color="cyan"] { background: #00bcd4; }
+        .roadmap-shape[data-color="pink"] { background: #e91e63; }
+        .line {
+            width: 2px;
+            background: #000;
+            position: absolute;
+        }
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 10px solid #000;
+            position: absolute;
+        }
+        .line-container {
+            position: relative;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        Professional JEE Study Portal
+    </div>
+
+    <div class="container">
+        <!-- Document Upload Section -->
+        <div class="section">
+            <h2>Upload Documents</h2>
+            <div class="card-container">
+                <div class="card" id="physics-card">
+                    <div class="card-header">Physics</div>
+                    <div class="upload-section">
+                        <input type="file" id="physics-file-upload" />
+                        <label for="physics-file-upload">Upload Physics Document</label>
+                        <div class="upload-info" id="physics-upload-info">No file selected</div>
+                    </div>
+                    <button class="save-button" onclick="uploadFile('physics')">Upload Physics Document</button>
+                </div>
+
+                <div class="card" id="maths-card">
+                    <div class="card-header">Maths</div>
+                    <div class="upload-section">
+                        <input type="file" id="maths-file-upload" />
+                        <label for="maths-file-upload">Upload Maths Document</label>
+                        <div class="upload-info" id="maths-upload-info">No file selected</div>
+                    </div>
+                    <button class="save-button" onclick="uploadFile('maths')">Upload Maths Document</button>
+                </div>
+
+                <div class="card" id="chemistry-card">
+                    <div class="card-header">Chemistry</div>
+                    <div class="upload-section">
+                        <input type="file" id="chemistry-file-upload" />
+                        <label for="chemistry-file-upload">Upload Chemistry Document</label>
+                        <div class="upload-info" id="chemistry-upload-info">No file selected</div>
+                    </div>
+                    <button class="save-button" onclick="uploadFile('chemistry')">Upload Chemistry Document</button>
+                </div>
+            </div>
+            <div class="file-list" id="file-list">
+                <!-- Uploaded files will appear here -->
+            </div>
+        </div>
+
+        <!-- Video Upload Section -->
+        <div class="section">
+            <h2>Upload Videos</h2>
+            <div class="video-container">
+                <div class="card-container">
+                    <div class="card" id="physics-video-card">
+                        <div class="card-header">Physics</div>
+                        <div class="upload-section">
+                            <input type="file" id="physics-video-upload" accept="video/*" />
+                            <label for="physics-video-upload">Upload Physics Video</label>
+                            <div class="upload-info" id="physics-video-info">No video selected</div>
+                        </div>
+                        <button class="save-button" onclick="uploadVideo('physics')">Upload Physics Video</button>
+                    </div>
+
+                    <div class="card" id="maths-video-card">
+                        <div class="card-header">Maths</div>
+                        <div class="upload-section">
+                            <input type="file" id="maths-video-upload" accept="video/*" />
+                            <label for="maths-video-upload">Upload Maths Video</label>
+                            <div class="upload-info" id="maths-video-info">No video selected</div>
+                        </div>
+                        <button class="save-button" onclick="uploadVideo('maths')">Upload Maths Video</button>
+                    </div>
+
+                    <div class="card" id="chemistry-video-card">
+                        <div class="card-header">Chemistry</div>
+                        <div class="upload-section">
+                            <input type="file" id="chemistry-video-upload" accept="video/*" />
+                            <label for="chemistry-video-upload">Upload Chemistry Video</label>
+                            <div class="upload-info" id="chemistry-video-info">No video selected</div>
+                        </div>
+                        <button class="save-button" onclick="uploadVideo('chemistry')">Upload Chemistry Video</button>
+                    </div>
+                </div>
+                <div class="video-list" id="video-list">
+                    <!-- Uploaded videos will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Roadmap Section -->
+        <div class="section">
+            <h2>Upload and Edit Roadmap</h2>
+            <div class="roadmap-container">
+                <div class="roadmap-section">
+                    <div class="roadmap-shape" data-color="red" onclick="editShape('red')"></div>
+                    <div class="roadmap-shape" data-color="green" onclick="editShape('green')"></div>
+                    <div class="roadmap-shape" data-color="blue" onclick="editShape('blue')"></div>
+                    <div class="roadmap-shape" data-color="purple" onclick="editShape('purple')"></div>
+                    <div class="roadmap-shape" data-color="yellow" onclick="editShape('yellow')"></div>
+                    <div class="roadmap-shape" data-color="orange" onclick="editShape('orange')"></div>
+                    <div class="roadmap-shape" data-color="cyan" onclick="editShape('cyan')"></div>
+                    <div class="roadmap-shape" data-color="pink" onclick="editShape('pink')"></div>
+                </div>
+                <button class="save-button" onclick="saveRoadmap()">Save Roadmap</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function uploadFile(subject) {
+            const fileInput = document.getElementById(`${subject}-file-upload`);
+            const fileInfo = document.getElementById(`${subject}-upload-info`);
+            const fileList = document.getElementById('file-list');
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                const uploadTime = new Date().toLocaleString();
+                fileInfo.textContent = `File selected: ${fileName}`;
+                fileList.innerHTML += `
+                    <div class="file-item">
+                        ${fileName} <span class="timestamp">(${uploadTime})</span>
+                    </div>`;
+                fileInput.value = ""; // Clear the input after upload
+            } else {
+                fileInfo.textContent = 'No file selected';
+            }
+        }
+
+        function uploadVideo(subject) {
+            const videoInput = document.getElementById(`${subject}-video-upload`);
+            const videoInfo = document.getElementById(`${subject}-video-info`);
+            const videoList = document.getElementById('video-list');
+            if (videoInput.files.length > 0) {
+                const videoName = videoInput.files[0].name;
+                const uploadTime = new Date().toLocaleString();
+                videoInfo.textContent = `Video selected: ${videoName}`;
+                videoList.innerHTML += `
+                    <div class="video-item">
+                        ${videoName} <span class="timestamp">(${uploadTime})</span>
+                    </div>`;
+                videoInput.value = ""; // Clear the input after upload
+            } else {
+                videoInfo.textContent = 'No video selected';
+            }
+        }
+
+        function editShape(color) {
+            alert(`Edit shape with color: ${color}`);
+        }
+
+        function saveRoadmap() {
+            alert('Roadmap saved!');
+        }
+    </script>
+</body>
+</html>
 
 </html>
