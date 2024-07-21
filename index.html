@@ -1,49 +1,179 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEE EdTech Platform</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body><body class="bg-gray-100 h-screen">
-    <header class="bg-blue-600 p-4 text-white text-center">
-        <h1 class="text-3xl">JEE SPACE</h1>
+<body>
+    <header>
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1>Unlock Your Potential with Expert JEE Guidance</h1>
+                <a href="#features" class="cta-button">Join Now</a>
+            </div>
+        </div>
     </header>
-    <main class="p-6">
-        <section class="mb-6">
-            <h2 class="text-2xl font-bold mb-2">Personalized Learning Path</h2>
-            <p>Use the algorithm to get personalized learning recommendations.</p>
-            <button class="mt-2 bg-purple-500 text-white py-2 px-4 rounded">Get Learning Path</button>
-        </section>
-        <section class="mb-6">
-            <h2 class="text-2xl font-bold mb-2">Content Delivery</h2>
-            <div class="circle-btn">Pre-recorded Videos</div>
-        </section>
-        <section class="mb-6">
-            <h2 class="text-2xl font-bold mb-2">Learning Tools</h2>
-            <ul class="list-disc pl-6">
-                <li>Chapter-wise Study Material</li>
-                <li>Question Bank</li>
-                <li>Formula Sheets</li>
-            </ul>
-        </section>
-        <section class="mb-6">
-            <h2 class="text-2xl font-bold mb-2">Assessment and Practice</h2>
-            <ul class="list-disc pl-6">
-                <li>Mock Tests</li>
-                <li>Practice Tests</li>
-                <li>Performance Tracking</li>
-            </ul>
-        </section>
-        <section class="mb-6">
-            <h2 class="text-2xl font-bold mb-2">Admin Features</h2>
-            <ul class="list-disc pl-6">
-                <li>Edit/Upload Materials</li>
-            </ul>
-        </section>
-    </main>
 
+    <section id="features" class="features-section">
+        <div class="feature-card" style="background-color: #00bcd4;">
+            <h2>Live Lectures</h2>
+            <p>Interact with experts in real-time.</p>
+        </div>
+        <div class="feature-card" style="background-color: #ff5722;">
+            <h2>Practice Tests</h2>
+            <p>Test your knowledge with our extensive question bank.</p>
+        </div>
+        <div class="feature-card" style="background-color: #9c27b0;">
+            <h2>Study Materials</h2>
+            <p>Access chapter-wise study resources.</p>
+        </div>
+    </section>
 
-</body>
-    <h1>Welcome to My Website</h1>
-    <p>This is my first website hosted on GitHub Pages!</p>
+    <section class="testimonials">
+        <div class="testimonial-slider">
+            <div class="testimonial">
+                <p>"This platform transformed my preparation experience!"</p>
+                <span>- Student A</span>
+            </div>
+            <div class="testimonial">
+                <p>"Amazing resources and expert guidance!"</p>
+                <span>- Student B</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="news">
+        <div class="news-ticker">
+            <p>Upcoming Feature: AI-powered Doubt Clearing!</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <ul>
+                <li><a href="#community">Community Forum</a></li>
+                <li><a href="#timetable">Timetable Management</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+            <div class="social-media">
+                <a href="#">Facebook</a>
+                <a href="#">Twitter</a>
+                <a href="#">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
 </body>
 </html>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    position: relative;
+    height: 100vh;
+    background: url('background-image.jpg') no-repeat center center/cover;
+    color: white;
+}
+
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    background-color: #ff5722;
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+}
+
+.features-section {
+    display: flex;
+    justify-content: space-around;
+    padding: 50px;
+    background: #f5f5f5;
+}
+
+.feature-card {
+    width: 30%;
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}
+
+.testimonials {
+    padding: 50px;
+    background: #e0e0e0;
+    text-align: center;
+}
+
+.testimonial-slider {
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.testimonial {
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 0 10px;
+}
+
+.news {
+    background: #00bcd4;
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
+.news-ticker {
+    font-size: 1.2em;
+}
+
+footer {
+    background: #333;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.footer-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-content li {
+    display: inline;
+    margin: 0 15px;
+}
+
+.footer-content a {
+    color: white;
+    text-decoration: none;
+}
+
+.social-media a {
+    margin: 0 10px;
+    color: white;
+    text-decoration: none;
+}
+// Simple JavaScript for interactivity (e.g., carousel functionality) can be added here if needed.
