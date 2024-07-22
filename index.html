@@ -288,7 +288,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: auto;
             background: #fff;
             padding: 20px;
@@ -333,6 +333,20 @@
             background-color: #007bff;
             color: #fff;
         }
+        .toolbar {
+            margin-bottom: 10px;
+        }
+        .toolbar button {
+            padding: 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .toolbar button.active {
+            background-color: #0056b3;
+            color: #fff;
+        }
         #drawingCanvas {
             border: 2px solid #0056b3;
             cursor: crosshair;
@@ -359,7 +373,19 @@
             <button onclick="saveQuestions()">Save Questions</button>
         </div>
         <div class="save-confirmation" id="saveConfirmation">Your changes have been saved!</div>
+        
+        <div class="toolbar">
+            <button onclick="selectTool('pen')" class="active" id="penTool">Pen</button>
+            <button onclick="selectTool('eraser')" id="eraserTool">Eraser</button>
+            <button onclick="selectTool('color')" id="colorTool">Color</button>
+            <button onclick="selectTool('circle')" id="circleTool">Circle</button>
+            <button onclick="selectTool('rectangle')" id="rectangleTool">Rectangle</button>
+            <button onclick="selectTool('arrow')" id="arrowTool">Arrow</button>
+            <button onclick="selectTool('text')" id="textTool">Text</button>
+        </div>
+
         <canvas id="drawingCanvas" width="800" height="400"></canvas>
+        
         <table class="questions-table" id="questionsTable">
             <thead>
                 <tr>
@@ -375,6 +401,85 @@
     </div>
 
     <script>
+        let currentTool = 'pen';
+        let drawing = false;
+        let color = '#000000';
+        let fontSize = 20;
+        let startX, startY;
+
+        const canvas = document.getElementById('drawingCanvas');
+        const context = canvas.getContext('2d');
+
+        function selectTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.toolbar button').forEach(button => button.classList.remove('active'));
+            document.getElementById(`${tool}Tool`).classList.add('active');
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            startX = e.clientX - canvas.offsetLeft;
+            startY = e.clientY - canvas.offsetTop;
+            context.beginPath();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+            context.closePath();
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!drawing) return;
+
+            const x = e.clientX - canvas.offsetLeft;
+            const y = e.clientY - canvas.offsetTop;
+
+            if (currentTool === 'pen') {
+                context.lineWidth = 2;
+                context.lineCap = 'round';
+                context.strokeStyle = color;
+                context.lineTo(x, y);
+                context.stroke();
+            } else if (currentTool === 'eraser') {
+                context.clearRect(x, y, 10, 10);
+            } else if (currentTool === 'circle') {
+                context.beginPath();
+                context.arc(x, y, 30, 0, Math.PI * 2, false);
+                context.stroke();
+                context.closePath();
+            } else if (currentTool === 'rectangle') {
+                context.beginPath();
+                context.rect(startX, startY, x - startX, y - startY);
+                context.stroke();
+                context.closePath();
+            } else if (currentTool === 'arrow') {
+                context.beginPath();
+                context.moveTo(startX, startY);
+                context.lineTo(x, y);
+                context.stroke();
+                context.closePath();
+                drawArrowhead(context, startX, startY, x, y);
+            } else if (currentTool === 'text') {
+                const text = prompt('Enter text:', '');
+                if (text !== null) {
+                    context.font = `${fontSize}px Arial`;
+                    context.fillText(text, x, y);
+                }
+            }
+        });
+
+        function drawArrowhead(context, fromX, fromY, toX, toY) {
+            const headLength = 10;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            context.moveTo(toX, toY);
+            context.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6));
+            context.moveTo(toX, toY);
+            context.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6));
+            context.stroke();
+        }
+
         function addQuestion() {
             const questionText = document.getElementById('questionText').value;
             const questionDetails = document.getElementById('questionDetails').value;
@@ -423,33 +528,10 @@
                 document.getElementById('saveConfirmation').style.display = 'none';
             }, 2000);
         }
-
-        // Drawing functionality
-        const canvas = document.getElementById('drawingCanvas');
-        const context = canvas.getContext('2d');
-        let drawing = false;
-
-        canvas.addEventListener('mousedown', () => drawing = true);
-        canvas.addEventListener('mouseup', () => {
-            drawing = false;
-            context.beginPath();
-        });
-        canvas.addEventListener('mousemove', draw);
-
-        function draw(event) {
-            if (!drawing) return;
-            context.lineWidth = 2;
-            context.lineCap = 'round';
-            context.strokeStyle = '#000';
-
-            context.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-            context.stroke();
-            context.beginPath();
-            context.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-        }
     </script>
 </body>
 </html>
+
 
 </html>
 
