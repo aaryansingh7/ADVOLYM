@@ -155,28 +155,34 @@
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
         }
+
         h1 {
             text-align: center;
             color: #2e8b57;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
             background-color: #ffffff;
         }
+
         th, td {
             border: 2px solid #4682b4;
             padding: 12px;
             text-align: left;
         }
+
         th {
             background-color: #6a5acd;
             color: white;
         }
+
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
         button {
             padding: 10px 20px;
             margin-top: 10px;
@@ -185,9 +191,11 @@
             border: none;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #5a9bd5;
         }
+
         #notification {
             display: none;
             background-color: #32cd32;
@@ -198,19 +206,11 @@
             bottom: 0;
             width: 100%;
         }
-        td a {
-            color: #4682b4;
-            text-decoration: none;
-        }
-        td a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
     <h1>JEE Table</h1>
     <button id="addRowButton">Add Row</button>
-    <input type="file" id="fileInput" />
     <table id="jeeTable">
         <thead>
             <tr>
@@ -232,7 +232,6 @@
             const saveButton = document.getElementById('saveButton');
             const addRowButton = document.getElementById('addRowButton');
             const notification = document.getElementById('notification');
-            const fileInput = document.getElementById('fileInput');
 
             // Load table data from localStorage
             loadTableData();
@@ -246,11 +245,6 @@
             // Add row button click event
             addRowButton.addEventListener('click', () => {
                 addRow();
-            });
-
-            // File input change event
-            fileInput.addEventListener('change', (event) => {
-                handleFileUpload(event.target.files);
             });
 
             function loadTableData() {
@@ -272,7 +266,7 @@
                     const rowData = [];
 
                     cells.forEach((cell, index) => {
-                        rowData.push(cell.querySelector('a') ? cell.querySelector('a').href : cell.textContent);
+                        rowData.push(cell.textContent);
                     });
 
                     tableData.push(rowData);
@@ -284,20 +278,10 @@
             function createRow(rowData = ['', '', '', '']) {
                 const row = document.createElement('tr');
 
-                rowData.forEach((cellData, index) => {
+                rowData.forEach(cellData => {
                     const cell = document.createElement('td');
-                    cell.contentEditable = (index !== 0); // Make all cells editable except the first one
-
-                    if (index === 0 && cellData) {
-                        const link = document.createElement('a');
-                        link.href = cellData;
-                        link.textContent = cellData.split('/').pop();
-                        link.target = '_blank';
-                        cell.appendChild(link);
-                    } else {
-                        cell.textContent = cellData;
-                    }
-
+                    cell.contentEditable = true;
+                    cell.textContent = cellData;
                     row.appendChild(cell);
                 });
 
@@ -307,24 +291,6 @@
             function addRow() {
                 const row = createRow();
                 jeeTable.appendChild(row);
-            }
-
-            function handleFileUpload(files) {
-                const file = files[0];
-                const reader = new FileReader();
-
-                reader.onload = function(event) {
-                    const fileData = event.target.result;
-                    const fileName = file.name;
-                    const date = new Date().toLocaleDateString();
-                    const status = "Uploaded";
-
-                    const rowData = [fileData, fileName, date, status];
-                    const row = createRow(rowData);
-                    jeeTable.appendChild(row);
-                };
-
-                reader.readAsDataURL(file);
             }
 
             function showNotification() {
