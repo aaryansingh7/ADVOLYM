@@ -166,6 +166,114 @@
         }
     </script>
 </body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEE Aspirant Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #282c34;
+            color: #61dafb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #chatbox {
+            width: 350px;
+            height: 500px;
+            background: #20232a;
+            border-radius: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+        #input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 5px;
+            outline: none;
+        }
+        #send-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #61dafb;
+            color: #20232a;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #send-btn:hover {
+            background-color: #21a1f1;
+        }
+        .message {
+            margin: 5px 0;
+        }
+        .user {
+            color: #61dafb;
+            text-align: right;
+        }
+        .bot {
+            color: #fff;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox"></div>
+    <div id="input-container">
+        <input type="text" id="input" placeholder="Type your question here..." />
+        <button id="send-btn">Send</button>
+    </div>
+
+    <script>
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+        document.getElementById('input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('input').value;
+            if (!input.trim()) return;
+
+            document.getElementById('chatbox').innerHTML += `<div class="message user">You: ${input}</div>`;
+
+            // Simulate bot response
+            const botResponse = getBotResponse(input);
+            document.getElementById('chatbox').innerHTML += `<div class="message bot">Bot: ${botResponse}</div>`;
+
+            document.getElementById('input').value = '';
+            document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+        }
+
+        function getBotResponse(input) {
+            // Example responses; replace with actual logic or API call
+            if (input.toLowerCase().includes('physics')) {
+                return 'Here are some Physics concepts you might find useful...';
+            } else if (input.toLowerCase().includes('chemistry')) {
+                return 'Chemistry is all about elements and compounds...';
+            } else if (input.toLowerCase().includes('maths')) {
+                return 'Maths involves numbers and equations...';
+            } else {
+                return 'Sorry, I didn\'t understand that. Try asking about Physics, Chemistry, or Maths.';
+            }
+        }
+    </script>
+</body>
+</html>
+
 </html>
 
 
