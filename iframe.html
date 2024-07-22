@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Page</title>
+</head>
+<body>
+    <h1>Iframe Page</h1>
+    <script>
+        // Listen for messages from the parent
+        window.addEventListener('message', (event) => {
+            if (event.origin === 'https://your-main-website.com') {
+                console.log('Message from parent:', event.data);
+
+                // Send a message back to the parent
+                event.source.postMessage('Hello back from the iframe!', event.origin);
+            } else {
+                console.warn('Origin not trusted:', event.origin);
+            }
+        });
+    </script>
+</body>
+</html>
