@@ -7,31 +7,52 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2e8b57;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-        }
-
-        table, th, td {
-            border: 1px solid black;
+            background-color: #ffffff;
         }
 
         th, td {
-            padding: 10px;
+            border: 2px solid #4682b4;
+            padding: 12px;
             text-align: left;
+        }
+
+        th {
+            background-color: #6a5acd;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
 
         button {
             padding: 10px 20px;
             margin-top: 10px;
+            background-color: #4682b4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #5a9bd5;
         }
 
         #notification {
             display: none;
-            background-color: #4CAF50;
+            background-color: #32cd32;
             color: white;
             text-align: center;
             padding: 10px;
@@ -48,10 +69,9 @@
         <thead>
             <tr>
                 <th>File Name</th>
-                <th>Credits</th>
+                <th>Description</th>
                 <th>Date</th>
-                <th>Edit Time</th>
-                <th>Actions</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -100,9 +120,7 @@
                     const rowData = [];
 
                     cells.forEach((cell, index) => {
-                        if (index < cells.length - 1) { // Exclude the actions cell
-                            rowData.push(cell.textContent);
-                        }
+                        rowData.push(cell.textContent);
                     });
 
                     tableData.push(rowData);
@@ -121,25 +139,12 @@
                     row.appendChild(cell);
                 });
 
-                // Add action buttons
-                const actionsCell = document.createElement('td');
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = () => deleteRow(row);
-                actionsCell.appendChild(deleteButton);
-                row.appendChild(actionsCell);
-
                 return row;
             }
 
             function addRow() {
                 const row = createRow();
                 jeeTable.appendChild(row);
-            }
-
-            function deleteRow(row) {
-                row.remove();
-                saveTableData(); // Save changes after deleting a row
             }
 
             function showNotification() {
@@ -151,6 +156,4 @@
         });
     </script>
 </body>
-</html>
-
 </html>
