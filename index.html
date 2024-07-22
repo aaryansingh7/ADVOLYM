@@ -384,6 +384,11 @@
             background-color: #3f3f6c;
             color: white;
         }
+        .status-message {
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -394,6 +399,7 @@
         <div class="input-section">
             <input type="text" id="fileLink" placeholder="Enter Google Drive file link" size="50">
             <button onclick="addFile()">Add File</button>
+            <button onclick="saveFiles()">Save</button>
         </div>
         <div class="files-list" id="filesList">
             <h2>Uploaded Files</h2>
@@ -411,9 +417,18 @@
                 </tbody>
             </table>
         </div>
+        <div class="status-message" id="statusMessage"></div>
     </div>
 
     <script>
+        // Load saved files from localStorage on page load
+        window.onload = function() {
+            const savedFiles = JSON.parse(localStorage.getItem('files')) || [];
+            savedFiles.forEach(file => {
+                addRow(file);
+            });
+        };
+
         function addFile() {
             const link = document.getElementById('fileLink').value;
             const fileName = link.split('/').pop().split('?')[0]; // Extract file name from the URL
@@ -422,18 +437,43 @@
             const lastRevised = date;
 
             if (fileName && link) {
-                const row = `<tr>
-                    <td><a href="${link}" target="_blank">${fileName}</a></td>
-                    <td>${date}</td>
-                    <td>${time}</td>
-                    <td>${lastRevised}</td>
-                </tr>`;
-
-                document.getElementById('filesTableBody').innerHTML += row;
+                const file = { fileName, link, date, time, lastRevised };
+                addRow(file);
                 document.getElementById('fileLink').value = ''; // Clear input field
             } else {
                 alert('Please enter a valid Google Drive file link.');
             }
+        }
+
+        function addRow(file) {
+            const row = `<tr>
+                <td><a href="${file.link}" target="_blank">${file.fileName}</a></td>
+                <td>${file.date}</td>
+                <td>${file.time}</td>
+                <td>${file.lastRevised}</td>
+            </tr>`;
+
+            document.getElementById('filesTableBody').innerHTML += row;
+        }
+
+        function saveFiles() {
+            const rows = document.querySelectorAll('#filesTableBody tr');
+            const files = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const file = {
+                    fileName: cells[0].innerText,
+                    link: cells[0].querySelector('a').href,
+                    date: cells[1].innerText,
+                    time: cells[2].innerText,
+                    lastRevised: cells[3].innerText
+                };
+                files.push(file);
+            });
+
+            localStorage.setItem('files', JSON.stringify(files));
+            document.getElementById('statusMessage').innerText = 'Files have been saved!';
         }
     </script>
 </body>
