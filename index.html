@@ -334,8 +334,18 @@
             color: #fff;
         }
         #drawingCanvas {
-            border: 1px solid #ddd;
+            border: 2px solid #0056b3;
             cursor: crosshair;
+            background-color: #e6f7ff;
+        }
+        .save-confirmation {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -346,7 +356,9 @@
             <input type="text" id="questionText" placeholder="Enter your question here..." />
             <textarea id="questionDetails" rows="5" placeholder="Enter detailed description (optional)..."></textarea>
             <button onclick="addQuestion()">Add Question</button>
+            <button onclick="saveQuestions()">Save Questions</button>
         </div>
+        <div class="save-confirmation" id="saveConfirmation">Your changes have been saved!</div>
         <canvas id="drawingCanvas" width="800" height="400"></canvas>
         <table class="questions-table" id="questionsTable">
             <thead>
@@ -405,13 +417,23 @@
             }
         }
 
+        function saveQuestions() {
+            document.getElementById('saveConfirmation').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('saveConfirmation').style.display = 'none';
+            }, 2000);
+        }
+
         // Drawing functionality
         const canvas = document.getElementById('drawingCanvas');
         const context = canvas.getContext('2d');
         let drawing = false;
 
         canvas.addEventListener('mousedown', () => drawing = true);
-        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+            context.beginPath();
+        });
         canvas.addEventListener('mousemove', draw);
 
         function draw(event) {
@@ -425,10 +447,6 @@
             context.beginPath();
             context.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
         }
-
-        canvas.addEventListener('mouseleave', () => {
-            context.beginPath();
-        });
     </script>
 </body>
 </html>
