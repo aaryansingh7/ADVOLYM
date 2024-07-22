@@ -23,12 +23,17 @@
             padding: 15px;
             border-radius: 8px;
         }
-        .input-section {
-            margin-bottom: 20px;
+        .upload-btn {
+            background-color: #5c5c9d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
         }
-        .input-section input, .input-section button {
-            padding: 10px;
-            margin-right: 10px;
+        .upload-btn:hover {
+            background-color: #4a4a7d;
         }
         .files-list {
             margin-top: 20px;
@@ -50,11 +55,6 @@
             background-color: #3f3f6c;
             color: white;
         }
-        .status-message {
-            color: green;
-            font-weight: bold;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -62,11 +62,7 @@
         <div class="header">
             <h1>Document Upload Portal</h1>
         </div>
-        <div class="input-section">
-            <input type="text" id="fileLink" placeholder="Enter Google Drive file link" size="50">
-            <button onclick="addFile()">Add File</button>
-            <button onclick="saveFiles()">Save</button>
-        </div>
+        <button class="upload-btn" onclick="handleUpload()">Upload from Google Drive</button>
         <div class="files-list" id="filesList">
             <h2>Uploaded Files</h2>
             <table>
@@ -83,65 +79,76 @@
                 </tbody>
             </table>
         </div>
-        <div class="status-message" id="statusMessage"></div>
     </div>
 
+    <!-- Google API Script -->
+    <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // Load saved files from localStorage on page load
-        window.onload = function() {
-            const savedFiles = JSON.parse(localStorage.getItem('files')) || [];
-            savedFiles.forEach(file => {
-                addRow(file);
+        let GoogleAuth;
+        const CLIENT_ID = 'YOUR_CLIENT_ID'; // Replace with your Client ID
+        const API_KEY = 'YOUR_API_KEY'; // Replace with your API Key
+        const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+        const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+        function handleClientLoad() {
+            gapi.load('client:auth2', initClient);
+        }
+
+        function initClient() {
+            gapi.client.init({
+                apiKey: API_KEY,
+                clientId: CLIENT_ID,
+                discoveryDocs: DISCOVERY_DOCS,
+                scope: SCOPES
+            }).then(() => {
+                GoogleAuth = gapi.auth2.getAuthInstance();
+                GoogleAuth.isSignedIn.listen(updateSigninStatus);
+                updateSigninStatus(GoogleAuth.isSignedIn.get());
             });
-        };
+        }
 
-        function addFile() {
-            const link = document.getElementById('fileLink').value;
-            const fileName = link.split('/').pop().split('?')[0]; // Extract file name from the URL
-            const date = new Date().toLocaleDateString();
-            const time = new Date().toLocaleTimeString();
-            const lastRevised = date;
-
-            if (fileName && link) {
-                const file = { fileName, link, date, time, lastRevised };
-                addRow(file);
-                document.getElementById('fileLink').value = ''; // Clear input field
+        function updateSigninStatus(isSignedIn) {
+            if (isSignedIn) {
+                // Handle sign-in state changes
             } else {
-                alert('Please enter a valid Google Drive file link.');
+                // Handle sign-out state changes
             }
         }
 
-        function addRow(file) {
-            const row = `<tr>
-                <td><a href="${file.link}" target="_blank">${file.fileName}</a></td>
-                <td>${file.date}</td>
-                <td>${file.time}</td>
-                <td>${file.lastRevised}</td>
-            </tr>`;
-
-            document.getElementById('filesTableBody').innerHTML += row;
+        function handleUpload() {
+            if (GoogleAuth.isSignedIn.get()) {
+                const picker = new google.picker.PickerBuilder()
+                    .addView(google.picker.ViewId.DOCS)
+                    .setOAuthToken(GoogleAuth.currentUser.get().getAuthResponse().access_token)
+                    .setCallback(pickerCallback)
+                    .build();
+                picker.setVisible(true);
+            } else {
+                GoogleAuth.signIn();
+            }
         }
 
-        function saveFiles() {
-            const rows = document.querySelectorAll('#filesTableBody tr');
-            const files = [];
+        function pickerCallback(data) {
+            if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+                const doc = data[google.picker.Response.DOCUMENTS][0];
+                const fileName = doc.name;
+                const date = new Date().toLocaleDateString();
+                const time = new Date().toLocaleTimeString();
+                const lastRevised = date; // You may want to update this accordingly
 
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                const file = {
-                    fileName: cells[0].innerText,
-                    link: cells[0].querySelector('a').href,
-                    date: cells[1].innerText,
-                    time: cells[2].innerText,
-                    lastRevised: cells[3].innerText
-                };
-                files.push(file);
-            });
+                const row = `<tr>
+                    <td>${fileName}</td>
+                    <td>${date}</td>
+                    <td>${time}</td>
+                    <td>${lastRevised}</td>
+                </tr>`;
 
-            localStorage.setItem('files', JSON.stringify(files));
-            document.getElementById('statusMessage').innerText = 'Files have been saved!';
+                document.getElementById('filesTableBody').innerHTML += row;
+            }
         }
+
+        gapi.load('auth2', handleClientLoad);
     </script>
 </body>
 </html>
-</html>
+
