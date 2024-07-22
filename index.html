@@ -55,6 +55,14 @@
             font-weight: bold;
             margin-top: 20px;
         }
+        .delete-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -65,12 +73,14 @@
         <div class="input-section">
             <input type="text" id="fileLink" placeholder="Enter Google Drive file link" size="50">
             <button onclick="saveFile()">Save</button>
+            <button class="delete-button" onclick="deleteSelected()">Delete Selected</button>
         </div>
         <div class="files-list" id="filesList">
             <h2>Saved Files</h2>
             <table>
                 <thead>
                     <tr>
+                        <th>Select</th>
                         <th>File Name</th>
                         <th>Date</th>
                         <th>Time</th>
@@ -114,6 +124,7 @@
 
         function addRow(file) {
             const row = `<tr>
+                <td><input type="checkbox" class="file-checkbox"></td>
                 <td><a href="${file.link}" target="_blank">${file.fileName}</a></td>
                 <td>${file.date}</td>
                 <td>${file.time}</td>
@@ -128,7 +139,33 @@
             savedFiles.push(file);
             localStorage.setItem('files', JSON.stringify(savedFiles));
         }
+
+        function deleteSelected() {
+            const checkboxes = document.querySelectorAll('.file-checkbox');
+            const rowsToDelete = [];
+            checkboxes.forEach((checkbox, index) => {
+                if (checkbox.checked) {
+                    rowsToDelete.push(index);
+                }
+            });
+
+            if (rowsToDelete.length === 0) {
+                alert('No files selected for deletion.');
+                return;
+            }
+
+            let savedFiles = JSON.parse(localStorage.getItem('files')) || [];
+            rowsToDelete.reverse().forEach(index => {
+                savedFiles.splice(index, 1);
+            });
+
+            localStorage.setItem('files', JSON.stringify(savedFiles));
+            document.getElementById('filesTableBody').innerHTML = '';
+            savedFiles.forEach(file => addRow(file));
+            document.getElementById('statusMessage').innerText = 'Selected files have been deleted!';
+        }
     </script>
 </body>
 </html>
+
 
