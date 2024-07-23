@@ -807,4 +807,139 @@
 </html>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Streaming Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #3a7bd5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .main-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 1200px;
+            text-align: center;
+        }
+        video {
+            width: 100%;
+            max-height: 600px;
+            border-radius: 10px;
+        }
+        .button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .button.red {
+            background-color: #f44336;
+        }
+        .button.red:hover {
+            background-color: #d32f2f;
+        }
+        .button.blue {
+            background-color: #2196f3;
+        }
+        .button.blue:hover {
+            background-color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <header>Live Streaming Portal</header>
+    <div class="container">
+        <div class="main-content">
+            <h2>Live Stream</h2>
+            <video id="videoStream" autoplay></video>
+            <br>
+            <button id="goLive" class="button blue">Go Live</button>
+            <button id="stopLive" class="button red" style="display: none;">Stop Streaming</button>
+        </div>
+    </div>
+
+    <script>
+        const goLiveButton = document.getElementById('goLive');
+        const stopLiveButton = document.getElementById('stopLive');
+        const videoElement = document.getElementById('videoStream');
+        let mediaStream = null;
+
+        async function startStreaming() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                videoElement.srcObject = mediaStream;
+                goLiveButton.style.display = 'none';
+                stopLiveButton.style.display = 'inline-block';
+            } catch (error) {
+                console.error('Error accessing camera/microphone:', error);
+            }
+        }
+
+        function stopStreaming() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                videoElement.srcObject = null;
+                goLiveButton.style.display = 'inline-block';
+                stopLiveButton.style.display = 'none';
+            }
+        }
+
+        goLiveButton.addEventListener('click', startStreaming);
+        stopLiveButton.addEventListener('click', stopStreaming);
+    </script>
+</body>
+</html>
+
 <html/>
