@@ -93,24 +93,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .text-tool {
-            position: absolute;
-            background-color: #FFFFFF;
-            color: #000000;
-            padding: 5px;
-            border-radius: 3px;
-            font-size: 16px;
-            display: none;
-        }
-        .text-tool textarea {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: transparent;
-            color: inherit;
-            font-size: 16px;
-            outline: none;
-        }
     </style>
 </head>
 <body>
@@ -133,12 +115,17 @@
         const context = board.getContext('2d');
         let drawing = false;
         let startTime = null;
-        let currentTool = 'pen';
         let microphoneOn = false;
+        let currentTool = 'pen';
+        let stream = null;
 
         function startLive() {
             navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
+                .then(userStream => {
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                    stream = userStream;
                     document.getElementById('microphoneToggle').innerText = '🎙️ On';
                     microphoneOn = true;
                     const audioContext = new AudioContext();
@@ -153,9 +140,11 @@
         }
 
         function endLive() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
             document.getElementById('microphoneToggle').innerText = '🎙️ Off';
             microphoneOn = false;
-            // Stop the stream and clean up
         }
 
         function updateTimeline() {
@@ -181,13 +170,9 @@
             }
         }
 
-        document.getElementById('startLive').addEventListener('click', startLive);
-        document.getElementById('endLive').addEventListener('click', endLive);
-        document.getElementById('microphoneToggle').addEventListener('click', toggleMicrophone);
-        document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
-
         function addStickyNote() {
             const color = prompt('Enter color (e.g., #FFFF00):');
+            if (!color) return;
             const note = document.createElement('div');
             note.classList.add('sticky-note');
             note.style.backgroundColor = color;
@@ -207,15 +192,22 @@
             else if (tool === 'highlighter') context.lineWidth = 6;
         }
 
+        document.getElementById('startLive').addEventListener('click', startLive);
+        document.getElementById('endLive').addEventListener('click', endLive);
+        document.getElementById('microphoneToggle').addEventListener('click', toggleMicrophone);
+        document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
+
         document.getElementById('penTool').addEventListener('click', () => setTool('pen'));
         document.getElementById('markerTool').addEventListener('click', () => setTool('marker'));
         document.getElementById('highlighterTool').addEventListener('click', () => setTool('highlighter'));
         document.getElementById('textTool').addEventListener('click', () => {
             const text = prompt('Enter text:');
-            const x = Math.random() * board.width;
-            const y = Math.random() * board.height;
-            context.font = '20px Arial';
-            context.fillText(text, x, y);
+            if (text) {
+                const x = Math.random() * board.width;
+                const y = Math.random() * board.height;
+                context.font = '20px Arial';
+                context.fillText(text, x, y);
+            }
         });
         document.getElementById('stickyNoteTool').addEventListener('click', addStickyNote);
 
