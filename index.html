@@ -521,22 +521,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Streaming Portal</title>
+    <title>Live Streaming with Writing Board</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
             background-color: #f4f4f9;
-            overflow: hidden;
         }
         header {
             background-color: #3a7bd5;
             color: white;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
-            font-size: 28px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 24px;
         }
         .container {
             display: flex;
@@ -552,11 +550,10 @@
             width: 80%;
             max-width: 1200px;
             position: relative;
-            overflow: hidden;
         }
         #videoStream {
             width: 100%;
-            max-height: 600px;
+            max-height: 500px;
             border-radius: 10px;
             background-color: #000;
         }
@@ -566,45 +563,29 @@
             justify-content: space-between;
         }
         .button {
-            background-color: #4caf50;
-            color: white;
-            border: none;
             padding: 10px 20px;
+            border: none;
             cursor: pointer;
             border-radius: 5px;
             font-size: 16px;
             transition: background-color 0.3s;
         }
-        .button.red {
-            background-color: #f44336;
-        }
-        .button.red:hover {
-            background-color: #d32f2f;
-        }
-        .button.blue {
-            background-color: #2196f3;
-        }
-        .button.blue:hover {
-            background-color: #1976d2;
-        }
-        .button.yellow {
-            background-color: #ffeb3b;
-            color: #000;
-        }
-        .button.yellow:hover {
-            background-color: #fdd835;
-        }
+        .button.green { background-color: #4caf50; color: white; }
+        .button.red { background-color: #f44336; color: white; }
+        .button.yellow { background-color: #ffeb3b; color: black; }
+        .button.blue { background-color: #2196f3; color: white; }
+        .button:hover { opacity: 0.9; }
         #chatBox {
             width: 100%;
             max-height: 200px;
             overflow-y: auto;
             background-color: #f1f1f1;
             padding: 10px;
-            border-radius: 10px;
+            border-radius: 5px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
         #chatInput {
-            width: 100%;
+            width: calc(100% - 22px);
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -612,7 +593,6 @@
         }
         #inviteBox {
             display: flex;
-            justify-content: space-between;
             margin-top: 10px;
         }
         #inviteLink {
@@ -653,128 +633,122 @@
             font-size: 16px;
             display: none;
         }
+        .recording-controls {
+            margin-top: 20px;
+        }
+        .recording-controls button {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .recording-controls .record { background-color: #f44336; color: white; }
+        .recording-controls .stop { background-color: #4caf50; color: white; }
     </style>
 </head>
 <body>
-    <header>Live Streaming Portal</header>
+    <header>
+        Live Streaming Portal with Writing Board
+    </header>
     <div class="container">
         <div class="main-content">
             <video id="videoStream" autoplay></video>
-            <button class="button yellow fullscreen-button" onclick="toggleFullscreen()">Fullscreen</button>
+            <button id="fullscreenButton" class="fullscreen-button">Fullscreen</button>
             <div class="controls">
-                <button id="goLive" class="button blue">Go Live</button>
-                <button id="stopLive" class="button red" style="display: none;">Stop Streaming</button>
-                <button id="record" class="button yellow">Start Recording</button>
-                <button id="stopRecord" class="button red" style="display: none;">Stop Recording</button>
+                <button id="inviteButton" class="button.red">Invite</button>
+                <input type="text" id="inviteLink" placeholder="Share this link">
+                <button id="saveButton" class="button.green">Save</button>
+                <button id="recordButton" class="button.red">Record</button>
+                <button id="stopRecordButton" class="button.green">Stop</button>
             </div>
             <div id="chatBox"></div>
-            <input type="text" id="chatInput" placeholder="Type your message..." />
-            <div id="inviteBox">
-                <input type="text" id="inviteLink" placeholder="Share this link to invite others..." />
-                <button id="inviteButton">Invite</button>
+            <input type="text" id="chatInput" placeholder="Type your message...">
+            <div class="recording-controls">
+                <button id="recordButton" class="button.red">Start Recording</button>
+                <button id="stopRecordButton" class="button.green">Stop Recording</button>
             </div>
-            <div id="annotation" class="annotation"></div>
+            <div id="annotation" class="annotation">Annotation</div>
         </div>
     </div>
-
     <script>
-        const goLiveButton = document.getElementById('goLive');
-        const stopLiveButton = document.getElementById('stopLive');
-        const recordButton = document.getElementById('record');
-        const stopRecordButton = document.getElementById('stopRecord');
-        const videoElement = document.getElementById('videoStream');
-        const chatInput = document.getElementById('chatInput');
-        const chatBox = document.getElementById('chatBox');
+        const videoStream = document.getElementById('videoStream');
         const inviteButton = document.getElementById('inviteButton');
+        const saveButton = document.getElementById('saveButton');
+        const fullscreenButton = document.getElementById('fullscreenButton');
+        const recordButton = document.getElementById('recordButton');
+        const stopRecordButton = document.getElementById('stopRecordButton');
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
         const inviteLink = document.getElementById('inviteLink');
         const annotation = document.getElementById('annotation');
-        let mediaStream = null;
-        let mediaRecorder = null;
+        
+        let stream;
+        let mediaRecorder;
         let recordedChunks = [];
 
-        async function startStreaming() {
+        async function startStream() {
             try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                videoElement.srcObject = mediaStream;
-                goLiveButton.style.display = 'none';
-                stopLiveButton.style.display = 'inline-block';
-                recordButton.style.display = 'inline-block';
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                videoStream.srcObject = stream;
             } catch (error) {
-                console.error('Error accessing camera/microphone:', error);
+                console.error('Error accessing media devices.', error);
             }
         }
 
-        function stopStreaming() {
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                videoElement.srcObject = null;
-                goLiveButton.style.display = 'inline-block';
-                stopLiveButton.style.display = 'none';
-                recordButton.style.display = 'none';
-                stopRecordButton.style.display = 'none';
-            }
+        function handleInvite() {
+            const url = window.location.href;
+            inviteLink.value = url;
         }
 
         function startRecording() {
-            if (mediaStream) {
-                mediaRecorder = new MediaRecorder(mediaStream);
-                mediaRecorder.ondataavailable = event => {
-                    if (event.data.size > 0) {
-                        recordedChunks.push(event.data);
-                    }
-                };
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'recording.webm';
-                    a.click();
-                    recordedChunks = [];
-                };
-                mediaRecorder.start();
-                recordButton.style.display = 'none';
-                stopRecordButton.style.display = 'inline-block';
-            }
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'recording.webm';
+                a.click();
+            };
+            mediaRecorder.start();
         }
 
         function stopRecording() {
-            if (mediaRecorder) {
-                mediaRecorder.stop();
-                mediaRecorder = null;
-                stopRecordButton.style.display = 'none';
-                recordButton.style.display = 'inline-block';
-            }
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
+            mediaRecorder.stop();
         }
 
         function handleChat() {
             const message = chatInput.value;
-            if (message.trim()) {
-                const p = document.createElement('p');
-                p.textContent = message;
-                chatBox.appendChild(p);
+            if (message) {
+                const messageElement = document.createElement('div');
+                messageElement.textContent = message;
+                chatBox.appendChild(messageElement);
                 chatInput.value = '';
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
         }
 
-        function handleInvite() {
-            const link = window.location.href;
-            inviteLink.value = link;
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                fullscreenButton.textContent = 'Exit Fullscreen';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    fullscreenButton.textContent = 'Fullscreen';
+                }
+            }
         }
 
-        goLiveButton.addEventListener('click', startStreaming);
-        stopLiveButton.addEventListener('click', stopStreaming);
+        fullscreenButton.addEventListener('click', toggleFullScreen);
         recordButton.addEventListener('click', startRecording);
         stopRecordButton.addEventListener('click', stopRecording);
         chatInput.addEventListener('keypress', (e) => {
@@ -795,6 +769,8 @@
                 showAnnotation('Annotation Example');
             }
         });
+
+        startStream();
     </script>
 </body>
 </html>
