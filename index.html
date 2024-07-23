@@ -12,146 +12,139 @@
             background-color: #1E1E1E;
             color: #FFFFFF;
             display: flex;
-            flex-direction: row;
-            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
         }
         #controls {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 80px;
-            height: 100vh;
-            background-color: #2C2C2C;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding-top: 20px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+            align-items: flex-start;
         }
-        .button, .icon {
-            width: 60px;
-            height: 60px;
+        .button {
+            width: 150px;
+            height: 50px;
             margin: 10px 0;
-            background-color: #007BFF;
+            background-color: #0000FF;
             color: #FFFFFF;
             text-align: center;
-            line-height: 60px;
-            border-radius: 50%;
+            line-height: 50px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 24px;
-            user-select: none;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
         }
-        .button { background-color: #007BFF; }
-        .icon.pen { background-color: #FFFF00; }
-        .icon.marker { background-color: #FF0000; }
-        .icon.highlighter { background-color: #00FF00; }
-        .icon.text { background-color: #008000; }
-        .icon.sticky { background-color: #FFC0CB; }
+        .button:hover {
+            background-color: #0000CC;
+        }
         #drawingBoard {
             border: 2px solid #000000;
-            width: calc(100vw - 80px); /* Adjust width to account for controls */
+            width: 100vw;
             height: 80vh;
             background-color: #000000;
             position: relative;
-            margin-left: 80px; /* Adjust to fit controls panel */
+            overflow: hidden;
         }
-        .sticky-note {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background-color: #FFFF00;
-            color: #000000;
-            padding: 10px;
-            border-radius: 5px;
-            resize: both;
-            overflow: auto;
-            display: none;
+        .icon {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            cursor: pointer;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
         }
-        .sticky-note input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: transparent;
-            color: inherit;
-            font-size: 16px;
-            outline: none;
-        }
-        #timeline {
-            position: fixed;
-            top: 80px;
-            left: 20px;
-            color: #FFFFFF;
-            font-size: 16px;
+        .icon.pen { background-color: #FFFF00; }
+        .icon.marker { background-color: #FF0000; }
+        .icon.text { background-color: #008000; }
+        .icon.sticky { background-color: #FFC0CB; }
+        .icon:hover {
+            opacity: 0.8;
         }
         #fullscreen {
             position: fixed;
             bottom: 20px;
             left: 20px;
-            background-color: #007BFF;
+            background-color: #0000FF;
             color: #FFFFFF;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+        }
+        #fullscreen:hover {
+            background-color: #0000CC;
+        }
+        #drawingBoard {
+            position: relative;
+        }
+        .sticky-note {
+            position: absolute;
+            background-color: #FFFF00;
+            padding: 10px;
+            border: 1px solid #000000;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+        }
+        .text-tool {
+            position: absolute;
+            color: #FFFFFF;
+            font-size: 16px;
+            background: rgba(0,0,0,0.5);
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+        }
+        .sticky-note.editing {
+            background-color: #FFA500;
+        }
+        .text-tool.editing {
+            background-color: #008000;
         }
     </style>
 </head>
 <body>
     <div id="controls">
-        <div class="button" id="startLive">🔴</div>
-        <div class="button" id="endLive">🛑</div>
-        <div class="button" id="microphoneToggle">🎙️</div>
-        <div class="icon pen" id="penTool">✏️</div>
-        <div class="icon marker" id="markerTool">✒️</div>
-        <div class="icon highlighter" id="highlighterTool">🖍️</div>
-        <div class="icon text" id="textTool">📝</div>
-        <div class="icon sticky" id="stickyNoteTool">🗒️</div>
-        <div id="timeline">Time Elapsed: 00:00</div>
-        <div id="fullscreen">⛶</div>
+        <div class="button" id="startLive">Go Live</div>
+        <div class="button" id="endLive">End Live</div>
+        <div class="button" id="microphoneToggle">Microphone Off</div>
+        <div id="fullscreen">Fullscreen</div>
     </div>
     <div id="drawingBoard"></div>
 
     <script>
+        // Initialize drawing board
         const board = document.getElementById('drawingBoard');
         const context = board.getContext('2d');
         let drawing = false;
-        let startTime = null;
-        let microphoneOn = false;
-        let currentTool = 'pen';
-        let stream = null;
+        let microphoneEnabled = false;
+        let mediaStream = null;
 
         function startLive() {
             navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(userStream => {
-                    if (stream) {
-                        stream.getTracks().forEach(track => track.stop());
-                    }
-                    stream = userStream;
-                    document.getElementById('microphoneToggle').innerText = '🎙️ On';
-                    microphoneOn = true;
-                    const audioContext = new AudioContext();
-                    const source = audioContext.createMediaStreamSource(stream);
-                    // Audio processing can be handled here
+                .then(stream => {
+                    mediaStream = stream;
+                    document.getElementById('microphoneToggle').innerText = 'Microphone On';
+                    microphoneEnabled = true;
                 })
-                .catch(error => {
-                    console.error('Error accessing microphone:', error);
+                .catch(err => {
+                    console.error("Microphone access denied.", err);
                 });
-            startTime = Date.now();
-            setInterval(updateTimeline, 1000);
         }
 
         function endLive() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                document.getElementById('microphoneToggle').innerText = 'Microphone Off';
+                microphoneEnabled = false;
             }
-            document.getElementById('microphoneToggle').innerText = '🎙️ Off';
-            microphoneOn = false;
-        }
-
-        function updateTimeline() {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-            document.getElementById('timeline').innerText = `Time Elapsed: ${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
         function toggleFullscreen() {
@@ -163,33 +156,19 @@
         }
 
         function toggleMicrophone() {
-            if (microphoneOn) {
-                endLive();
-            } else {
+            if (!microphoneEnabled) {
                 startLive();
+            } else {
+                endLive();
             }
         }
 
-        function addStickyNote() {
-            const color = prompt('Enter color (e.g., #FFFF00):');
-            if (!color) return;
-            const note = document.createElement('div');
-            note.classList.add('sticky-note');
-            note.style.backgroundColor = color;
-            note.innerHTML = '<input type="text" placeholder="Type here...">';
-            note.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
-            note.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
-            document.getElementById('drawingBoard').appendChild(note);
-            note.style.display = 'block';
-        }
-
-        function setTool(tool) {
-            currentTool = tool;
-            context.strokeStyle = '#FFFF00'; // default pen color
-            context.lineWidth = 2;
-            if (tool === 'pen') context.lineWidth = 2;
-            else if (tool === 'marker') context.lineWidth = 4;
-            else if (tool === 'highlighter') context.lineWidth = 6;
+        function draw(event) {
+            if (drawing && microphoneEnabled) {
+                const rect = board.getBoundingClientRect();
+                context.lineTo(event.clientX - rect.left, event.clientY - rect.top);
+                context.stroke();
+            }
         }
 
         document.getElementById('startLive').addEventListener('click', startLive);
@@ -197,39 +176,42 @@
         document.getElementById('microphoneToggle').addEventListener('click', toggleMicrophone);
         document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
 
-        document.getElementById('penTool').addEventListener('click', () => setTool('pen'));
-        document.getElementById('markerTool').addEventListener('click', () => setTool('marker'));
-        document.getElementById('highlighterTool').addEventListener('click', () => setTool('highlighter'));
-        document.getElementById('textTool').addEventListener('click', () => {
-            const text = prompt('Enter text:');
-            if (text) {
-                const x = Math.random() * board.width;
-                const y = Math.random() * board.height;
-                context.font = '20px Arial';
-                context.fillText(text, x, y);
-            }
-        });
-        document.getElementById('stickyNoteTool').addEventListener('click', addStickyNote);
-
         board.addEventListener('mousedown', () => drawing = true);
         board.addEventListener('mouseup', () => drawing = false);
-        board.addEventListener('mousemove', (event) => {
-            if (drawing) {
-                if (currentTool === 'pen' || currentTool === 'marker' || currentTool === 'highlighter') {
-                    context.beginPath();
-                    context.lineTo(event.clientX - board.offsetLeft, event.clientY - board.offsetTop);
-                    context.stroke();
-                }
-            }
-        });
+        board.addEventListener('mousemove', draw);
 
+        // Resize canvas on window resize
         window.addEventListener('resize', () => {
-            board.width = window.innerWidth - 80; // Adjust width to account for controls
+            board.width = window.innerWidth;
             board.height = window.innerHeight;
         });
 
-        // Initialize canvas size
-        window.dispatchEvent(new Event('resize'));
+        // Functionality for sticky notes and text tool
+        function createStickyNote() {
+            const note = document.createElement('div');
+            note.classList.add('sticky-note');
+            note.style.top = '50px';
+            note.style.left = '50px';
+            note.contentEditable = true;
+            note.innerText = 'New Note';
+            board.appendChild(note);
+        }
+
+        function createTextTool() {
+            const textTool = document.createElement('div');
+            textTool.classList.add('text-tool');
+            textTool.style.top = '100px';
+            textTool.style.left = '100px';
+            textTool.contentEditable = true;
+            textTool.innerText = 'New Text';
+            board.appendChild(textTool);
+        }
+
+        // Add functionality to create sticky notes and text tools
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'n') createStickyNote();
+            if (event.key === 't') createTextTool();
+        });
     </script>
 </body>
 </html>
