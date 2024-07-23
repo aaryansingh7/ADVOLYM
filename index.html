@@ -3,274 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Live Streaming Portal</title>
+    <title>Live Streaming Portal</title>
     <style>
         body {
             margin: 0;
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
         }
-        header {
-            background: linear-gradient(135deg, #ff6f61, #d82d6b);
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-            font-size: 28px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .container {
+
+        #live-portal {
             display: flex;
             flex-direction: column;
-            align-items: center;
             height: 100vh;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
         }
-        .main-content {
-            position: relative;
-            width: 90%;
-            height: 70vh;
-            background-color: #000;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+        header {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            justify-content: space-around;
+            padding: 10px;
+            background-color: #444;
         }
-        #videoStream {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+
+        footer {
+            padding: 10px;
+            background-color: #444;
+            text-align: center;
         }
-        .controls, .recording-controls {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
-            gap: 10px;
-        }
-        button {
+
+        .btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 5px;
+            color: #fff;
             cursor: pointer;
-            transition: background-color 0.3s, box-shadow 0.3s;
+            font-size: 16px;
         }
-        .controls button, .recording-controls button {
-            color: #ffffff;
-            font-weight: bold;
+
+        .btn-live {
+            background: linear-gradient(to right, #ff0000, #ff7f00);
         }
-        .invite { background-color: #ff5722; }
-        .save { background-color: #4caf50; }
-        .record { background-color: #e91e63; }
-        .stop { background-color: #9c27b0; }
-        .microphone { background-color: #2196f3; }
-        .invite:hover, .save:hover, .record:hover, .stop:hover, .microphone:hover {
-            opacity: 0.9;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+
+        .btn-end {
+            background: linear-gradient(to right, #00ff00, #007f00);
         }
-        #chatBox {
+
+        .btn-microphone {
+            background: #007bff;
+        }
+
+        .btn-fullscreen {
+            background: #ffc107;
+        }
+
+        video {
             width: 100%;
-            height: 150px;
-            background-color: #333;
-            color: #ffffff;
-            border: 1px solid #4a148c;
-            overflow-y: auto;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: auto;
         }
-        #chatInput {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #4a148c;
-            background-color: #f5f5f5;
-            color: #333;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        #chatInput::placeholder {
-            color: #888;
-        }
-        .annotation {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #ffffff;
-            padding: 10px;
-            border-radius: 8px;
-            display: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .writing-board {
+
+        #drawing-board {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #000000;
-            border: 2px solid #4a148c;
-            border-radius: 10px;
-        }
-        .toolbar {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            display: none;
         }
-        .toolbar button {
+
+        #drawing-board canvas {
+            border: 2px solid #fff;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: center;
             padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-        .pen-tool { background-color: #ffeb3b; color: #000000; }
-        .marker-tool { background-color: #ffeb3b; color: #000000; }
-        .highlight-tool { background-color: #ffeb3b; color: #000000; }
-        .text-tool { background-color: #ffffff; color: #000000; }
-        .sticky-note-tool { background-color: #ffc107; color: #000000; }
-        .shape-tool { background-color: #9c27b0; color: #ffffff; }
-        .image-tool { background-color: #00bcd4; color: #ffffff; }
-        .export-tool { background-color: #ffc107; color: #000000; }
-        .search-tool { background-color: #e91e63; color: #ffffff; }
-        .zoom-tool { background-color: #2196f3; color: #ffffff; }
-        .undo-tool { background-color: #9e9e9e; color: #000000; }
-        .redo-tool { background-color: #9e9e9e; color: #000000; }
-        .handwriting-tool { background-color: #ffffff; color: #000000; }
-        .background-tool { background-color: #e0e0e0; color: #000000; }
-        .live-text-tool { background-color: #f44336; color: #ffffff; }
-        .toolbar button:hover {
-            opacity: 0.9;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
-    <header>
-        Enhanced Live Streaming Portal
-    </header>
-    <div class="container">
-        <div class="main-content">
-            <video id="videoStream" autoplay></video>
-            <button id="fullscreenButton" class="fullscreen-button">Fullscreen</button>
-            <button id="microphoneButton" class="microphone-button">Mic On</button>
-            <div class="controls">
-                <button id="inviteButton" class="invite">Invite</button>
-                <input type="text" id="inviteLink" placeholder="Share this link">
-                <button id="saveButton" class="save">Save</button>
-                <button id="recordButton" class="record">Record</button>
-                <button id="stopRecordButton" class="stop">Stop</button>
+    <div id="live-portal">
+        <header>
+            <button id="go-live" class="btn btn-live">Go Live</button>
+            <button id="end-live" class="btn btn-end" disabled>End Live</button>
+            <button id="microphone" class="btn btn-microphone">Mic On</button>
+        </header>
+        <main>
+            <div id="video-container">
+                <video id="local-video" autoplay muted></video>
+                <div id="drawing-board">
+                    <canvas id="drawing-canvas"></canvas>
+                </div>
             </div>
-            <div id="chatBox"></div>
-            <input type="text" id="chatInput" placeholder="Type your message...">
-            <div class="recording-controls">
-                <button id="recordButton" class="record">Start Recording</button>
-                <button id="stopRecordButton" class="stop">Stop Recording</button>
+            <div id="controls">
+                <button id="fullscreen" class="btn btn-fullscreen">Fullscreen</button>
             </div>
-            <div id="annotation" class="annotation">Annotation</div>
-            <div id="writingBoard" class="writing-board"></div>
-            <div class="toolbar">
-                <button id="penTool" class="pen-tool">Pen</button>
-                <button id="markerTool" class="marker-tool">Marker</button>
-                <button id="highlightTool" class="highlight-tool">Highlight</button>
-                <button id="textTool" class="text-tool">Text</button>
-                <button id="stickyNoteTool" class="sticky-note-tool">Sticky Note</button>
-                <button id="shapeTool" class="shape-tool">Shape</button>
-                <button id="imageTool" class="image-tool">Image</button>
-                <button id="exportTool" class="export-tool">Export</button>
-                <button id="searchTool" class="search-tool">Search</button>
-                <button id="zoomTool" class="zoom-tool">Zoom</button>
-                <button id="undoTool" class="undo-tool">Undo</button>
-                <button id="redoTool" class="redo-tool">Redo</button>
-                <button id="handwritingTool" class="handwriting-tool">Handwriting</button>
-                <button id="backgroundTool" class="background-tool">Background</button>
-                <button id="liveTextTool" class="live-text-tool">Live Text</button>
-            </div>
-        </div>
+        </main>
+        <footer>
+            <!-- Additional footer content -->
+        </footer>
     </div>
-    <script>
-        const videoStream = document.getElementById('videoStream');
-        const inviteButton = document.getElementById('inviteButton');
-        const saveButton = document.getElementById('saveButton');
-        const fullscreenButton = document.getElementById('fullscreenButton');
-        const microphoneButton = document.getElementById('microphoneButton');
-        const recordButton = document.getElementById('recordButton');
-        const stopRecordButton = document.getElementById('stopRecordButton');
-        const chatBox = document.getElementById('chatBox');
-        const chatInput = document.getElementById('chatInput');
-        const inviteLink = document.getElementById('inviteLink');
-        const annotation = document.getElementById('annotation');
-        const writingBoard = document.getElementById('writingBoard');
-        
-        let stream;
-        let mediaRecorder;
-        let recordedChunks = [];
-        let isMicOn = true;
 
-        async function startStream() {
+    <script>
+        let isLive = false;
+        let microphoneOn = false;
+        const localVideo = document.getElementById('local-video');
+        const goLiveButton = document.getElementById('go-live');
+        const endLiveButton = document.getElementById('end-live');
+        const microphoneButton = document.getElementById('microphone');
+        const drawingBoard = document.getElementById('drawing-board');
+        const canvas = document.getElementById('drawing-canvas');
+        const context = canvas.getContext('2d');
+        let drawing = false;
+
+        async function setupMedia() {
             try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-                videoStream.srcObject = stream;
-            } catch (error) {
-                console.error('Error accessing media devices.', error);
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localVideo.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing media devices.', err);
             }
         }
 
-        function handleInvite() {
-            const url = window.location.href;
-            inviteLink.value = url;
-        }
-
-        function startRecording() {
-            recordedChunks = [];
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    recordedChunks.push(event.data);
-                }
-            };
-            mediaRecorder.start();
-        }
-
-        function stopRecording() {
-            mediaRecorder.stop();
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'recording.webm';
-                a.click();
-                URL.revokeObjectURL(url);
-            };
-        }
-
         function toggleMicrophone() {
-            isMicOn = !isMicOn;
-            microphoneButton.textContent = isMicOn ? 'Mic On' : 'Mic Off';
-            stream.getAudioTracks().forEach(track => track.enabled = isMicOn);
+            const stream = localVideo.srcObject;
+            if (stream) {
+                const audioTracks = stream.getAudioTracks();
+                if (audioTracks.length > 0) {
+                    audioTracks[0].enabled = !audioTracks[0].enabled;
+                    microphoneOn = !microphoneOn;
+                    microphoneButton.textContent = microphoneOn ? 'Mic On' : 'Mic Off';
+                }
+            }
         }
 
-        document.getElementById('inviteButton').addEventListener('click', handleInvite);
-        document.getElementById('recordButton').addEventListener('click', startRecording);
-        document.getElementById('stopRecordButton').addEventListener('click', stopRecording);
-        document.getElementById('microphoneButton').addEventListener('click', toggleMicrophone);
+        goLiveButton.addEventListener('click', () => {
+            if (!isLive) {
+                setupMedia();
+                goLiveButton.disabled = true;
+                endLiveButton.disabled = false;
+                isLive = true;
+                drawingBoard.style.display = 'flex';
+            }
+        });
 
-        // Initialize video stream
-        startStream();
+        endLiveButton.addEventListener('click', () => {
+            if (isLive) {
+                const stream = localVideo.srcObject;
+                if (stream) {
+                    const tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+                localVideo.srcObject = null;
+                goLiveButton.disabled = false;
+                endLiveButton.disabled = true;
+                isLive = false;
+                drawingBoard.style.display = 'none';
+            }
+        });
+
+        microphoneButton.addEventListener('click', toggleMicrophone);
+
+        document.getElementById('fullscreen').addEventListener('click', () => {
+            if (localVideo.requestFullscreen) {
+                localVideo.requestFullscreen();
+            } else if (localVideo.mozRequestFullScreen) { /* Firefox */
+                localVideo.mozRequestFullScreen();
+            } else if (localVideo.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                localVideo.webkitRequestFullscreen();
+            } else if (localVideo.msRequestFullscreen) { /* IE/Edge */
+                localVideo.msRequestFullscreen();
+            }
+        });
+
+        // Drawing Board Functionality
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            context.moveTo(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (drawing) {
+                context.lineTo(e.clientX, e.clientY);
+                context.stroke();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+        });
+
+        // Adjust canvas size on window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
-
-<html/>
