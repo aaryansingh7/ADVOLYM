@@ -273,4 +273,134 @@
         }
     </script>
 </body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIDEO PORTAL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #6a5acd;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .container {
+            display: flex;
+            padding: 20px;
+        }
+        .sidebar {
+            width: 25%;
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .content {
+            width: 75%;
+            padding: 10px;
+        }
+        .file-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .file-card img {
+            max-width: 50px;
+            margin-right: 10px;
+        }
+        .file-card button {
+            background-color: #6a5acd;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .file-card button.delete {
+            background-color: #ff6347;
+        }
+    </style>
+</head>
+<body>
+    <header>VIDEO PORTAL</header>
+    <div class="container">
+        <div class="sidebar">
+            <h3>Upload Files</h3>
+            <input type="file" id="fileInput"><br><br>
+            <input type="text" id="driveLink" placeholder="Google Drive Link"><br><br>
+            <button onclick="addFile()">Upload</button>
+            <button onclick="addDriveLink()">Go</button>
+        </div>
+        <div class="content">
+            <div id="fileList"></div>
+        </div>
+    </div>
+    <script>
+        const fileList = document.getElementById('fileList');
+
+        function addFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    saveFile(file.name, e.target.result, new Date().toLocaleString());
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addDriveLink() {
+            const driveLink = document.getElementById('driveLink').value;
+            if (driveLink) {
+                saveFile(driveLink, 'drive_link_placeholder.png', new Date().toLocaleString());
+            }
+        }
+
+        function saveFile(name, data, timestamp) {
+            const files = JSON.parse(localStorage.getItem('files') || '[]');
+            files.push({ name, data, timestamp });
+            localStorage.setItem('files', JSON.stringify(files));
+            renderFiles();
+        }
+
+        function deleteFile(index) {
+            const files = JSON.parse(localStorage.getItem('files') || '[]');
+            files.splice(index, 1);
+            localStorage.setItem('files', JSON.stringify(files));
+            renderFiles();
+        }
+
+        function renderFiles() {
+            fileList.innerHTML = '';
+            const files = JSON.parse(localStorage.getItem('files') || '[]');
+            files.forEach((file, index) => {
+                const fileCard = document.createElement('div');
+                fileCard.className = 'file-card';
+                fileCard.innerHTML = `
+                    <img src="${file.data}" alt="File Image">
+                    <div>
+                        <strong>${file.name}</strong><br>
+                        <small>${file.timestamp}</small>
+                    </div>
+                    <button class="delete" onclick="deleteFile(${index})">Delete</button>
+                `;
+                fileList.appendChild(fileCard);
+            });
+        }
+
+        renderFiles();
+    </script>
+</body>
+</html>
+
 <html/>
