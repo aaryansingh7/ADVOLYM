@@ -7,204 +7,207 @@
     <style>
         body {
             margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #333;
-            color: #fff;
+            background-color: #1E1E1E;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: row;
         }
-
-        #live-portal {
+        #controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
             display: flex;
             flex-direction: column;
-            height: 100vh;
         }
-
-        header {
-            display: flex;
-            justify-content: space-around;
-            padding: 10px;
-            background-color: #444;
-        }
-
-        footer {
-            padding: 10px;
-            background-color: #444;
+        .button, .icon {
+            width: 60px;
+            height: 60px;
+            margin: 10px 0;
+            background-color: #0000FF;
+            color: #FFFFFF;
             text-align: center;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
+            line-height: 60px;
+            border-radius: 50%;
             cursor: pointer;
             font-size: 16px;
+            user-select: none;
         }
-
-        .btn-live {
-            background: linear-gradient(to right, #ff0000, #ff7f00);
+        .button { background-color: #007BFF; }
+        .icon.pen { background-color: #FFFF00; }
+        .icon.marker { background-color: #FF0000; }
+        .icon.highlighter { background-color: #00FF00; }
+        .icon.text { background-color: #008000; }
+        .icon.sticky { background-color: #FFC0CB; }
+        #drawingBoard {
+            border: 2px solid #000000;
+            width: 100vw;
+            height: 80vh;
+            background-color: #000000;
+            position: relative;
+            margin-left: 100px; /* Adjust to fit controls panel */
         }
-
-        .btn-end {
-            background: linear-gradient(to right, #00ff00, #007f00);
-        }
-
-        .btn-microphone {
-            background: #007bff;
-        }
-
-        .btn-fullscreen {
-            background: #ffc107;
-        }
-
-        video {
-            width: 100%;
-            height: auto;
-        }
-
-        #drawing-board {
+        .sticky-note {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 200px;
+            height: 200px;
+            background-color: #FFFF00;
+            color: #000000;
+            padding: 10px;
+            border-radius: 5px;
+            resize: both;
+            overflow: auto;
             display: none;
         }
-
-        #drawing-board canvas {
-            border: 2px solid #fff;
+        .sticky-note input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font-size: 16px;
+            outline: none;
         }
-
-        #controls {
-            display: flex;
-            justify-content: center;
+        #timeline {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            color: #FFFFFF;
+        }
+        #fullscreen {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #0000FF;
+            color: #FFFFFF;
             padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div id="live-portal">
-        <header>
-            <button id="go-live" class="btn btn-live">Go Live</button>
-            <button id="end-live" class="btn btn-end" disabled>End Live</button>
-            <button id="microphone" class="btn btn-microphone">Mic On</button>
-        </header>
-        <main>
-            <div id="video-container">
-                <video id="local-video" autoplay muted></video>
-                <div id="drawing-board">
-                    <canvas id="drawing-canvas"></canvas>
-                </div>
-            </div>
-            <div id="controls">
-                <button id="fullscreen" class="btn btn-fullscreen">Fullscreen</button>
-            </div>
-        </main>
-        <footer>
-            <!-- Additional footer content -->
-        </footer>
+    <div id="controls">
+        <div class="button" id="startLive">Go Live</div>
+        <div class="button" id="endLive">End Live</div>
+        <div class="button" id="microphoneToggle">Microphone Off</div>
+        <div class="icon pen" id="penTool">P</div>
+        <div class="icon marker" id="markerTool">M</div>
+        <div class="icon highlighter" id="highlighterTool">H</div>
+        <div class="icon text" id="textTool">T</div>
+        <div class="icon sticky" id="stickyNoteTool">S</div>
+        <div id="timeline">Time Elapsed: 00:00</div>
+        <div id="fullscreen">Fullscreen</div>
     </div>
+    <div id="drawingBoard"></div>
 
     <script>
-        let isLive = false;
-        let microphoneOn = false;
-        const localVideo = document.getElementById('local-video');
-        const goLiveButton = document.getElementById('go-live');
-        const endLiveButton = document.getElementById('end-live');
-        const microphoneButton = document.getElementById('microphone');
-        const drawingBoard = document.getElementById('drawing-board');
-        const canvas = document.getElementById('drawing-canvas');
-        const context = canvas.getContext('2d');
+        const board = document.getElementById('drawingBoard');
+        const context = board.getContext('2d');
         let drawing = false;
+        let startTime = null;
+        let currentTool = 'pen';
 
-        async function setupMedia() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                localVideo.srcObject = stream;
-            } catch (err) {
-                console.error('Error accessing media devices.', err);
+        function startLive() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    document.getElementById('microphoneToggle').innerText = 'Microphone On';
+                    const audioContext = new AudioContext();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    // Audio processing can be handled here
+                });
+            startTime = Date.now();
+            setInterval(updateTimeline, 1000);
+        }
+
+        function endLive() {
+            document.getElementById('microphoneToggle').innerText = 'Microphone Off';
+            // Stop the stream and clean up
+        }
+
+        function updateTimeline() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timeline').innerText = `Time Elapsed: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function toggleFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
             }
         }
 
         function toggleMicrophone() {
-            const stream = localVideo.srcObject;
-            if (stream) {
-                const audioTracks = stream.getAudioTracks();
-                if (audioTracks.length > 0) {
-                    audioTracks[0].enabled = !audioTracks[0].enabled;
-                    microphoneOn = !microphoneOn;
-                    microphoneButton.textContent = microphoneOn ? 'Mic On' : 'Mic Off';
-                }
+            const button = document.getElementById('microphoneToggle');
+            if (button.innerText === 'Microphone Off') {
+                startLive();
+            } else {
+                endLive();
             }
         }
 
-        goLiveButton.addEventListener('click', () => {
-            if (!isLive) {
-                setupMedia();
-                goLiveButton.disabled = true;
-                endLiveButton.disabled = false;
-                isLive = true;
-                drawingBoard.style.display = 'flex';
-            }
+        document.getElementById('startLive').addEventListener('click', startLive);
+        document.getElementById('endLive').addEventListener('click', endLive);
+        document.getElementById('microphoneToggle').addEventListener('click', toggleMicrophone);
+        document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
+
+        function addStickyNote() {
+            const color = prompt('Enter color (e.g., #FFFF00):');
+            const note = document.createElement('div');
+            note.classList.add('sticky-note');
+            note.style.backgroundColor = color;
+            note.innerHTML = '<input type="text" placeholder="Type here...">';
+            note.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
+            note.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
+            document.body.appendChild(note);
+            note.style.display = 'block';
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            context.strokeStyle = '#FFFF00'; // default pen color
+            context.lineWidth = 2;
+            if (tool === 'pen') context.lineWidth = 2;
+            else if (tool === 'marker') context.lineWidth = 4;
+            else if (tool === 'highlighter') context.lineWidth = 6;
+        }
+
+        document.getElementById('penTool').addEventListener('click', () => setTool('pen'));
+        document.getElementById('markerTool').addEventListener('click', () => setTool('marker'));
+        document.getElementById('highlighterTool').addEventListener('click', () => setTool('highlighter'));
+        document.getElementById('textTool').addEventListener('click', () => {
+            const text = prompt('Enter text:');
+            const x = Math.random() * board.width;
+            const y = Math.random() * board.height;
+            context.font = '20px Arial';
+            context.fillText(text, x, y);
         });
+        document.getElementById('stickyNoteTool').addEventListener('click', addStickyNote);
 
-        endLiveButton.addEventListener('click', () => {
-            if (isLive) {
-                const stream = localVideo.srcObject;
-                if (stream) {
-                    const tracks = stream.getTracks();
-                    tracks.forEach(track => track.stop());
-                }
-                localVideo.srcObject = null;
-                goLiveButton.disabled = false;
-                endLiveButton.disabled = true;
-                isLive = false;
-                drawingBoard.style.display = 'none';
-            }
-        });
-
-        microphoneButton.addEventListener('click', toggleMicrophone);
-
-        document.getElementById('fullscreen').addEventListener('click', () => {
-            if (localVideo.requestFullscreen) {
-                localVideo.requestFullscreen();
-            } else if (localVideo.mozRequestFullScreen) { /* Firefox */
-                localVideo.mozRequestFullScreen();
-            } else if (localVideo.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-                localVideo.webkitRequestFullscreen();
-            } else if (localVideo.msRequestFullscreen) { /* IE/Edge */
-                localVideo.msRequestFullscreen();
-            }
-        });
-
-        // Drawing Board Functionality
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        canvas.addEventListener('mousedown', (e) => {
-            drawing = true;
-            context.moveTo(e.clientX, e.clientY);
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
+        board.addEventListener('mousedown', () => drawing = true);
+        board.addEventListener('mouseup', () => drawing = false);
+        board.addEventListener('mousemove', (event) => {
             if (drawing) {
-                context.lineTo(e.clientX, e.clientY);
-                context.stroke();
+                if (currentTool === 'pen' || currentTool === 'marker' || currentTool === 'highlighter') {
+                    context.beginPath();
+                    context.lineTo(event.clientX - board.offsetLeft, event.clientY - board.offsetTop);
+                    context.stroke();
+                }
             }
         });
 
-        canvas.addEventListener('mouseup', () => {
-            drawing = false;
+        window.addEventListener('resize', () => {
+            board.width = window.innerWidth - 100; // Adjust width to account for controls
+            board.height = window.innerHeight;
         });
 
-        // Adjust canvas size on window resize
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+        // Initialize canvas size
+        window.dispatchEvent(new Event('resize'));
     </script>
 </body>
 </html>
