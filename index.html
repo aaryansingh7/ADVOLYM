@@ -16,23 +16,28 @@
         }
         #controls {
             position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 100vh;
+            background-color: #2C2C2C;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
         }
         .button, .icon {
             width: 60px;
             height: 60px;
             margin: 10px 0;
-            background-color: #0000FF;
+            background-color: #007BFF;
             color: #FFFFFF;
             text-align: center;
             line-height: 60px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 24px;
             user-select: none;
         }
         .button { background-color: #007BFF; }
@@ -43,11 +48,11 @@
         .icon.sticky { background-color: #FFC0CB; }
         #drawingBoard {
             border: 2px solid #000000;
-            width: 100vw;
+            width: calc(100vw - 80px); /* Adjust width to account for controls */
             height: 80vh;
             background-color: #000000;
             position: relative;
-            margin-left: 100px; /* Adjust to fit controls panel */
+            margin-left: 80px; /* Adjust to fit controls panel */
         }
         .sticky-note {
             position: absolute;
@@ -80,7 +85,7 @@
             position: fixed;
             bottom: 20px;
             left: 20px;
-            background-color: #0000FF;
+            background-color: #007BFF;
             color: #FFFFFF;
             padding: 10px;
             border-radius: 5px;
@@ -90,16 +95,16 @@
 </head>
 <body>
     <div id="controls">
-        <div class="button" id="startLive">Go Live</div>
-        <div class="button" id="endLive">End Live</div>
-        <div class="button" id="microphoneToggle">Microphone Off</div>
-        <div class="icon pen" id="penTool">P</div>
-        <div class="icon marker" id="markerTool">M</div>
-        <div class="icon highlighter" id="highlighterTool">H</div>
-        <div class="icon text" id="textTool">T</div>
-        <div class="icon sticky" id="stickyNoteTool">S</div>
+        <div class="button" id="startLive">🔴</div>
+        <div class="button" id="endLive">🛑</div>
+        <div class="button" id="microphoneToggle">🎙️</div>
+        <div class="icon pen" id="penTool">✏️</div>
+        <div class="icon marker" id="markerTool">✒️</div>
+        <div class="icon highlighter" id="highlighterTool">🖍️</div>
+        <div class="icon text" id="textTool">📝</div>
+        <div class="icon sticky" id="stickyNoteTool">🗒️</div>
         <div id="timeline">Time Elapsed: 00:00</div>
-        <div id="fullscreen">Fullscreen</div>
+        <div id="fullscreen">⛶</div>
     </div>
     <div id="drawingBoard"></div>
 
@@ -109,21 +114,27 @@
         let drawing = false;
         let startTime = null;
         let currentTool = 'pen';
+        let microphoneOn = false;
 
         function startLive() {
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
-                    document.getElementById('microphoneToggle').innerText = 'Microphone On';
+                    document.getElementById('microphoneToggle').innerText = '🎙️ On';
+                    microphoneOn = true;
                     const audioContext = new AudioContext();
                     const source = audioContext.createMediaStreamSource(stream);
                     // Audio processing can be handled here
+                })
+                .catch(error => {
+                    console.error('Error accessing microphone:', error);
                 });
             startTime = Date.now();
             setInterval(updateTimeline, 1000);
         }
 
         function endLive() {
-            document.getElementById('microphoneToggle').innerText = 'Microphone Off';
+            document.getElementById('microphoneToggle').innerText = '🎙️ Off';
+            microphoneOn = false;
             // Stop the stream and clean up
         }
 
@@ -143,11 +154,10 @@
         }
 
         function toggleMicrophone() {
-            const button = document.getElementById('microphoneToggle');
-            if (button.innerText === 'Microphone Off') {
-                startLive();
-            } else {
+            if (microphoneOn) {
                 endLive();
+            } else {
+                startLive();
             }
         }
 
@@ -202,7 +212,7 @@
         });
 
         window.addEventListener('resize', () => {
-            board.width = window.innerWidth - 100; // Adjust width to account for controls
+            board.width = window.innerWidth - 80; // Adjust width to account for controls
             board.height = window.innerHeight;
         });
 
