@@ -13,6 +13,7 @@
             color: #FFFFFF;
             display: flex;
             flex-direction: row;
+            overflow: hidden;
         }
         #controls {
             position: fixed;
@@ -80,6 +81,7 @@
             top: 80px;
             left: 20px;
             color: #FFFFFF;
+            font-size: 16px;
         }
         #fullscreen {
             position: fixed;
@@ -90,6 +92,24 @@
             padding: 10px;
             border-radius: 5px;
             cursor: pointer;
+        }
+        .text-tool {
+            position: absolute;
+            background-color: #FFFFFF;
+            color: #000000;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 16px;
+            display: none;
+        }
+        .text-tool textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font-size: 16px;
+            outline: none;
         }
     </style>
 </head>
@@ -174,7 +194,7 @@
             note.innerHTML = '<input type="text" placeholder="Type here...">';
             note.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
             note.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
-            document.body.appendChild(note);
+            document.getElementById('drawingBoard').appendChild(note);
             note.style.display = 'block';
         }
 
