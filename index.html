@@ -14,6 +14,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 100vh;
         }
         #controls {
             position: fixed;
@@ -61,8 +62,8 @@
         }
         #drawingBoard {
             border: 2px solid #000000;
-            width: 100vw;
-            height: 80vh;
+            width: 100%;
+            height: calc(100% - 100px);
             background-color: #000000;
             position: relative;
             overflow: hidden;
@@ -107,6 +108,39 @@
         #fullscreen:hover {
             background-color: #0056b3;
         }
+        #liveStatus {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+        }
+        .note-card {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background-color: #2C2C2C;
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+        }
+        .note-card button {
+            margin: 5px;
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: #FFFFFF;
+        }
+        .note-card button.yellow { background-color: #FFFF00; color: #000000; }
+        .note-card button.pink { background-color: #FFC0CB; color: #000000; }
+        .note-card button.green { background-color: #008000; }
     </style>
 </head>
 <body>
@@ -119,18 +153,30 @@
         <div class="icon marker" id="markerTool" title="Marker Tool">🖍️</div>
         <div class="icon text" id="textTool" title="Text Tool">A</div>
         <div class="icon sticky" id="stickyNoteTool" title="Sticky Note">🗒️</div>
+        <div class="note-card" id="noteCard">
+            <button class="yellow">Yellow</button>
+            <button class="pink">Pink</button>
+            <button class="green">Green</button>
+        </div>
     </div>
+    <div id="liveStatus"></div>
     <div id="drawingBoard"></div>
 
     <script>
         const board = document.getElementById('drawingBoard');
+        const liveStatus = document.getElementById('liveStatus');
+        const noteCard = document.getElementById('noteCard');
         const context = board.getContext('2d');
         let drawing = false;
         let tool = 'pen';
         let microphoneEnabled = false;
+        let liveStarted = false;
         let mediaStream = null;
 
         function startLive() {
+            liveStarted = true;
+            liveStatus.innerText = "Live classes have just started";
+            liveStatus.style.backgroundColor = "green";
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
                     mediaStream = stream;
@@ -148,6 +194,9 @@
                 document.getElementById('microphoneToggle').innerText = 'Microphone Off';
                 microphoneEnabled = false;
             }
+            liveStarted = false;
+            liveStatus.innerText = "";
+            liveStatus.style.backgroundColor = "";
         }
 
         function toggleMicrophone() {
@@ -167,9 +216,11 @@
         }
 
         function draw(event) {
-            if (drawing && microphoneEnabled) {
+            if (drawing) {
                 const rect = board.getBoundingClientRect();
                 if (tool === 'pen') {
+                    context.strokeStyle = '#FFFF00';
+                    context.lineWidth = 2;
                     context.lineTo(event.clientX - rect.left, event.clientY - rect.top);
                     context.stroke();
                 } else if (tool === 'marker') {
@@ -177,28 +228,32 @@
                     context.lineWidth = 4;
                     context.lineTo(event.clientX - rect.left, event.clientY - rect.top);
                     context.stroke();
+                } else if (tool === 'text') {
+                    const textTool = document.createElement('div');
+                    textTool.classList.add('text-tool');
+                    textTool.style.top = `${event.clientY - rect.top}px`;
+                    textTool.style.left = `${event.clientX - rect.left}px`;
+                    textTool.contentEditable = true;
+                    textTool.innerText = 'New Text';
+                    board.appendChild(textTool);
                 }
             }
         }
 
         function createStickyNote() {
-            const note = document.createElement('div');
-            note.classList.add('sticky-note');
-            note.style.top = '50px';
-            note.style.left = '50px';
-            note.contentEditable = true;
-            note.innerText = 'New Note';
-            board.appendChild(note);
+            noteCard.style.display = 'block';
         }
 
-        function createTextTool() {
-            const textTool = document.createElement('div');
-            textTool.classList.add('text-tool');
-            textTool.style.top = '100px';
-            textTool.style.left = '100px';
-            textTool.contentEditable = true;
-            textTool.innerText = 'New Text';
-            board.appendChild(textTool);
+        function addStickyNote(color) {
+            const rect = board.getBoundingClientRect();
+            const note = document.createElement('div');
+            note.classList.add('sticky-note');
+            note.style.backgroundColor = color;
+            note.style.top = `${Math.random() * (rect.height - 100)}px`;
+            note.style.left = `${Math.random() * (rect.width - 100)}px`;
+            note.contentEditable = true;
+            board.appendChild(note);
+            noteCard.style.display = 'none';
         }
 
         document.getElementById('startLive').addEventListener('click', startLive);
@@ -211,33 +266,17 @@
         document.getElementById('textTool').addEventListener('click', () => tool = 'text');
         document.getElementById('stickyNoteTool').addEventListener('click', createStickyNote);
 
-        board.addEventListener('mousedown', () => drawing = true);
-        board.addEventListener('mouseup', () => {
-            drawing = false;
+        document.querySelectorAll('.note-card button').forEach(button => {
+            button.addEventListener('click', () => addStickyNote(button.classList[0]));
+        });
+
+        board.addEventListener('mousedown', () => {
+            drawing = true;
             context.beginPath();
         });
         board.addEventListener('mousemove', draw);
-
-        window.addEventListener('resize', () => {
-            board.width = window.innerWidth;
-            board.height = window.innerHeight;
-        });
-
-        function updateTextTool() {
-            if (tool === 'text') {
-                const textTool = document.createElement('div');
-                textTool.classList.add('text-tool');
-                textTool.style.top = '150px';
-                textTool.style.left = '150px';
-                textTool.contentEditable = true;
-                textTool.innerText = 'New Text';
-                board.appendChild(textTool);
-            }
-        }
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 't') updateTextTool();
-        });
+        board.addEventListener('mouseup', () => drawing = false);
+        board.addEventListener('mouseout', () => drawing = false);
     </script>
 </body>
 </html>
